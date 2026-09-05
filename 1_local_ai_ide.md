@@ -63,6 +63,16 @@
 
 - 상단 메뉴의 **`File` → `Open Folder`**를 눌러, 앞으로 2권의 프로젝트를 진행할 전용 폴더(예: `my-vue-app`)를 새로 만들고 열어줍니다.
   {% endstep %}
+
+{% step %}
+**작업 폴더 보안 신뢰(Trust Folder) 승인**
+
+- 폴더를 처음 열면 **"Do you trust the authors of the files in this folder?"** 경고 팝업창이 나타납니다.
+- 이는 Antigravity IDE와 내장 AI가 해당 폴더 안에서 파일을 생성하고 터미널 명령을 안전하게 수행할 수 있도록 권한을 확인하는 절차입니다.
+- 매번 묻지 않도록 `Trust the authors of all files in the parent folder...` 옵션을 체크하고, 파란색 **`Yes, I trust the authors`** 버튼을 클릭해 승인합니다.
+
+<figure><img src=".gitbook/assets/trust_folder_dialog.png" alt="작업 폴더 신뢰 승인 팝업창"><figcaption><p>그림 1-1. 작업 공간 보안 신뢰(Trust Folder) 승인 화면</p></figcaption></figure>
+  {% endstep %}
   {% endstepper %}
 
 {% hint style="warning" %}
@@ -129,25 +139,38 @@ Cursor나 VSCode도 훌륭한 도구입니다. Antigravity IDE를 통해 AI와 �
 **핵심 정리**: 결국 우리가 해야 할 일은, 이 탑의 맨 아래인 **Node.js를 설치**하는 것입니다. 그러면 npm이 딸려오고, npm으로 Vite와 Vue를 설치하면, 이 탑 전체가 완성됩니다. 복잡해 보이지만, AI에게 한 번에 시키면 됩니다.
 {% endhint %}
 
-### 이제 AI에게 시켜봅시다
+### 이제 AI에게 시켜봅시다 (자동 실행)
 
-이 개발 환경 탑을 처음부터 손수 설치하는 것은 초보자에겐 꽤 번거로운 일입니다. 하지만 우리에겐 AI가 있습니다. 탑의 구조를 머릿속에 그린 채로, Antigravity IDE 안에서 AI에게 다음과 같이 명령해 봅시다:
+이 개발 환경 탑을 사람이 일일이 터미널 명령어를 찾아가며 설치하는 것은 초보자에겐 꽤 번거롭고 오류가 나기 쉬운 일입니다.하지만 **Antigravity IDE는 AI가 직접 내 컴퓨터 터미널에 명령어를 입력하고 실행할 수 있는 권한**을 가지고 있습니다.
 
-> 💬 "나는 맥북을 쓰는 초보자야. Vue.js 웹 개발을 위해 Node.js와 패키지 매니저를 설치하고, 빈 프로젝트를 하나 만들어서 로컬 서버로 띄워줘. 터미널에 칠 명령어를 순서대로 알려주고 실행해."
+우리가 명령어를 복사해서 직접 칠 필요 없이, 탑의 구조를 머릿속에 그린 채로 Antigravity IDE 채팅창에 다음과 같이 지시하기만 하면 됩니다:
 
-AI가 다음과 같은 순서로 작업을 진행하는 것을 보게 됩니다:
+> 💬 "나는 맥북을 쓰는 초보자야. Vue.js 웹 개발을 위해 Node.js 설치 여부를 확인하고, 빈 Vue 프로젝트를 생성해서 로컬 서버까지 띄워줘. 터미널 명령어를 직접 실행해 줘."
 
-1. Node.js 버전 관리자(nvm) 설치 여부 확인
-2. 프로젝트 폴더 생성 및 `npm create vue@latest` 실행
-3. 필요한 옵션(Vue Router, TypeScript 등) 선택
-4. `npm install` 로 의존성 설치
-5. `npm run dev` 로 개발 서버 실행
+그러면 AI가 터미널 실행 승인 버튼(Run Command)을 띄우며 다음과 같은 순서로 **설치부터 실행까지 직접 수행**합니다:
 
-이 과정에서 AI가 각 단계마다 무엇을 하는지 짧게 설명해 주도록 프롬프트를 조정할 수 있습니다.
+1. Node.js 및 npm 설치 여부 자동 확인
+2. **`npm create vue@latest ./` 실행** (현재 열린 폴더에 바로 생성하여 이중 폴더 방지)
+3. 권장 옵션(Vue Router, TypeScript 등) 설정
+4. `npm install` 로 필요 부품(의존성) 일괄 설치
+5. `npm run dev` 로 로컬 개발 서버 즉시 구동
 
-> 💬 "각 명령어를 실행하기 전에, 이 명령어가 뭘 하는 건지 한 줄로 설명하고 나서 실행해줘."
+이 과정에서 AI가 단순히 구동만 시키지 않고, 각 명령어의 역할을 친절히 학습시켜 주도록 프롬프트를 요청할 수 있습니다:
 
-이렇게 하면 단순히 명령어를 따라 치는 게 아니라, 각 단계의 의미를 이해하며 진행할 수 있습니다.
+> 💬 "명령어를 실행하기 전에, 이 명령어가 무엇을 하는 건지 한 줄로 친절히 설명하고 나서 실행해줘."
+
+독자는 AI가 띄워주는 터미널 명령어와 설명글을 눈으로 확인하고 **`Yes, allow this time` 또는 `Always allow` 같은 승인 버튼만 누르면** 개발 환경이 자동으로 뚝딱 완성됩니다.
+
+{% hint style="info" %}
+**💡 궁금증 풀기: Node.js가 미설치되어 있으면 AI가 어떻게 설치하나요?**
+
+1. **터미널 명령어 실행 권한(Terminal Tool)**: 보안을 위해 AI가 터미널에 명령어를 입력할 때마다 사용자의 승인(Approve)을 받습니다. (원할 경우 자동 승인 옵션을 켤 수도 있습니다.)
+2. **`node -v` 로 설치유무 확인시 만약 미설치인 경우**:
+   - **macOS**: AI가 맥용 패키지 관리자인 **Homebrew**(`brew install node`)나 **nvm** 설치 명령을 터미널에서 실행해 Node.js를 직접 설치합니다.
+   - **Windows**: AI가 **winget**(`winget install OpenJS.NodeJS`) 명령으로 자동 설치하거나, [nodejs.org](https://nodejs.org) 공식 다운로드 링크를 안내합니다.
+
+즉, 노드가 설치되어 있지 않아도 AI가 컴퓨터 환경에 맞는 설치 명령어를 스스로 찾아 터미널로 대신 수행합니다.
+{% endhint %}
 
 ## 4. 귀납적 코드 이해: AI가 깔아놓은 무기들 파악하기
 
