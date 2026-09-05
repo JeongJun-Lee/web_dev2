@@ -1,5 +1,6 @@
 $schema: https://api.gitbook.com/gitbook-docs.yaml
 site:
+  title: 바이브 코딩 - 심화편
   structure:
     - type: space
       key: main
