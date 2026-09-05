@@ -99,6 +99,22 @@ android/
     └── build.gradle
 ```
 
+```mermaid
+flowchart LR
+    subgraph Web ["🌐 웹 개발 영역"]
+        Vue["Vue.js / TS 소스"] -->|npm run build| Dist["dist/ 폴더 (정적 HTML/JS/CSS)"]
+    end
+
+    subgraph Cap ["⚡ Capacitor CLI"]
+        Dist -->|npx cap sync| Sync["웹뷰 복사 & 동기화"]
+    end
+
+    subgraph Native ["📱 네이티브 모바일 프로젝트"]
+        Sync -->|ios/App/public/| iOS["🍏 iOS 앱 (WKWebView)"]
+        Sync -->|android/assets/public/| Android["🤖 Android 앱 (WebView)"]
+    end
+```
+
 - **핵심 발견**: 우리가 만든 웹 코드(HTML/JS/CSS)가 `public/` 폴더에 그대로 복사됩니다. 그리고 iOS/Android의 `WKWebView`/`WebView`가 이 파일들을 읽어서 실행합니다.
 - **`capacitor.config.ts`**: 앱의 번들 ID(`com.samarkandtour.app`), 앱 이름, 웹뷰 설정 등이 정의됩니다. 앱스토어 등록 시 이 번들 ID가 앱을 고유하게 식별하는 이름표가 됩니다.
 - **왜 이 방식이 강력한가**: 웹 코드 하나로 웹 + iOS + Android 세 플랫폼을 동시에 커버합니다. 유지보수도 웹 코드 하나만 수정하면 됩니다.

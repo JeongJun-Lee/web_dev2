@@ -70,23 +70,31 @@ AI가 이 지시를 처리하면서 생성하는 파일들:
 ## 3. 귀납적 코드 이해: 결제 흐름(Flow) 분석하기
 AI가 작성한 결제 관련 코드를 따라가며 전체 흐름을 추적합니다.
 
-```
-[사용자 클릭]
-     ↓
-[프론트엔드: PaymentButton.vue]
-  fetch('/api/payment/create-session', { method: 'POST', body: {...} })
-     ↓
-[백엔드: functions/api/payment/create-session.ts]
-  stripe.checkout.sessions.create({ ... })  ← Stripe에 Session 생성 요청
-  return { url: 'https://checkout.stripe.com/...' }
-     ↓
-[브라우저: Stripe 결제 페이지로 이동]
-  사용자가 카드 정보 입력 (우리 서버를 거치지 않음!)
-     ↓
-[Stripe → 우리 서버: Webhook 호출]
-  POST /api/webhooks/stripe  ← 결제 완료 통보
-     ↓
-[백엔드: DB에 예약 레코드 저장]
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as 👤 사용자 (브라우저)
+    participant Client as 🖥️ Vue.js 앱
+    participant Server as ⚡ Cloudflare API
+    participant Stripe as 💳 Stripe 서버
+    participant DB as 🗄️ D1 DB
+
+    User->>Client: ① 날짜 선택 & 결제하기 클릭
+    Client->>Server: ② POST /api/payment/create-session
+    Server->>Stripe: ③ 결제 세션 생성 요청 (create-session)
+    Stripe-->>Server: ④ 결제 세션 URL 반환
+    Server-->>Client: ⑤ URL 응답 반환
+    Client->>Stripe: ⑥ Stripe 안심 결제 페이지로 이동 (카드 정보 입력)
+    Stripe->>Stripe: ⑦ 카드 승인 및 결제 처리
+
+    par 화면 이동
+        Stripe-->>Client: ⑧ 결제 성공 완료 페이지 이동
+    and 비동기 웹훅 알림
+        Stripe->>Server: ⑨ POST /api/webhooks/stripe (결제 성공 통보)
+        Server->>Server: ⑩ 웹훅 서명 검증 (Stripe-Signature)
+        Server->>DB: ⑪ 예약 정보 저장 (INSERT INTO bookings)
+        DB-->>Server: 저장 완료
+    end
 ```
 
 이 흐름에서 가장 중요한 발견:
@@ -141,6 +149,35 @@ CREATE TABLE bookings (
   status TEXT DEFAULT 'pending',
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+```
+
+```mermaid
+erDiagram
+    USERS ||--o{ BOOKINGS : "예약함 (1:N)"
+    GUIDES ||--o{ BOOKINGS : "배정됨 (1:N)"
+
+    USERS {
+        INTEGER id PK
+        TEXT email
+        TEXT password_hash
+        DATETIME created_at
+    }
+
+    BOOKINGS {
+        INTEGER id PK
+        INTEGER user_id FK
+        INTEGER guide_id FK
+        TEXT tour_date
+        INTEGER amount
+        TEXT stripe_session_id
+        TEXT status
+    }
+
+    GUIDES {
+        INTEGER id PK
+        TEXT name
+        TEXT language
+    }
 ```
 
 - **`REFERENCES users(id)`**: 이것이 **Foreign Key(외래 키)**입니다. `bookings` 테이블의 `user_id`는 반드시 `users` 테이블에 존재하는 `id`여야 합니다. 존재하지 않는 유저의 예약을 DB에 넣으려 하면 오류가 납니다.

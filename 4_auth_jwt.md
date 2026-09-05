@@ -33,23 +33,35 @@ JWT를 한 마디로 표현하면 **"서버가 직접 도장을 찍어준 디지
 서버는 "누가 로그인 중인지"를 기억하지 않아도 됩니다. 신분증을 보여주면 그걸로 충분합니다.
 {% endhint %}
 
-### JWT의 동작 흐름
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as 👤 브라우저 (사용자)
+    participant Server as ⚡ Cloudflare Pages API
+    participant DB as 🗄️ D1 데이터베이스
 
-![](.gitbook/assets/jwt_auth_flow.png)
+    rect rgb(240, 248, 255)
+    Note over User,DB: 1단계: 로그인 및 JWT 발급
+    User->>Server: ① 이메일 + 비밀번호 전송 (/api/auth/login)
+    Server->>DB: ② 유저 조회 (SELECT * FROM users)
+    DB-->>Server: 유저 해시 정보 반환
+    Server->>Server: ③ 비밀번호 검증 (bcrypt.compare)
+    Server-->>User: ④ 🎟️ JWT 토큰 발급 (서명된 디지털 신분증)
+    User->>User: ⑤ localStorage에 토큰 저장
+    end
 
-**단계별로 읽기:**
-
-```
-① 로그인 요청
-   브라우저가 이메일 + 비밀번호를 서버로 전송
-   
-② JWT 발급
-   서버가 DB에서 비밀번호 확인 → 맞으면 JWT 토큰 생성해서 반환
-   브라우저는 이 토큰을 localStorage에 저장해둠
-   
-③ 인증된 요청
-   이후 예약, 결제 등 API 호출 시 헤더에 토큰을 함께 전송
-   서버는 토큰의 서명만 확인하고 → 맞으면 요청 처리
+    rect rgb(245, 245, 245)
+    Note over User,DB: 2단계: 인증된 서비스 요청 (예: 예약하기)
+    User->>Server: ⑥ HTTP 헤더에 JWT 포함하여 요청 (Authorization: Bearer <Token>)
+    Server->>Server: ⑦ 토큰 서명(비밀 도장) 검증
+    alt 토큰이 유효함
+        Server->>DB: ⑧ 예약 데이터 저장 (INSERT INTO bookings)
+        DB-->>Server: 성공 응답
+        Server-->>User: ⑨ 200 OK (예약 완료)
+    else 토큰이 없거나 무효함
+        Server-->>User: 🔒 401 Unauthorized (접근 거부)
+    end
+    end
 ```
 
 ### JWT 토큰의 생김새

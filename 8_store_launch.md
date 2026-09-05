@@ -118,6 +118,26 @@ export const onRequest: PagesFunction = async ({ env }) => {
 };
 ```
 
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Cron as ⏰ Cloudflare Cron Trigger
+    participant Server as ⚡ Cloudflare Worker (remind.ts)
+    participant DB as 🗄️ D1 데이터베이스
+    participant FCM as 🔔 FCM / APNs (푸시 서버)
+    actor Mobile as 📱 사용자 모바일 앱
+
+    Note over Cron,Mobile: 매일 지정 시각 (사마르칸트 저녁 6시 / UTC 13:00) 자동 실행
+    Cron->>Server: ① scheduled(event) 이벤트 트리거 발생
+    Server->>DB: ② 내일(tour_date = tomorrow) 확정된 예약 목록 조회
+    DB-->>Server: ③ 대상 사용자 및 push_token 반환
+    
+    loop 내일 투어 참석 대상자마다 반복
+        Server->>FCM: ④ POST /messages:send (push_token, 알림 내용)
+        FCM->>Mobile: ⑤ 📱 "내일 투어가 있어요! 🗺️" 푸시 알림 팝업 전송!
+    end
+```
+
 - `@capacitor/push-notifications` 플러그인을 추가하면 iOS에서는 `APNs(Apple Push Notification service)`, Android에서는 `FCM(Firebase Cloud Messaging)`이라는 운영체제 본연의 푸시 인프라를 내부적으로 호출하게 됩니다.
 - **D1과의 연동**: 5장에서 만들어두었던 `bookings` 테이블과 `users` 테이블을 JOIN하여, 내일 투어 날짜(`tour_date`)가 있는 유저만 골라내는 구조를 귀납적으로 파악하게 됩니다.
 - **이메일과의 역할 분담**: 결제 직후 확정 안내는 이메일이, 당일 전날 "잊지 마세요" 리마인더는 푸시 알림이 담당합니다. 두 채널이 겹치지 않고 서로 다른 타이밍에 보완적으로 작동하는 설계입니다.
