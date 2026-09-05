@@ -5,6 +5,7 @@ site:
     - type: space
       key: main
       title: 바이브 코딩 - 심화편
+      default: true
       path: ./
       content:
         directory: ./
