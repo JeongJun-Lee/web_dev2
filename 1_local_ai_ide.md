@@ -26,6 +26,8 @@
 
 로컬 환경의 중요성을 알았다면, 다음 질문은 "어떤 도구를 쓸 것인가"입니다. 요즘 개발자들 사이에서는 Cursor나 VSCode + GitHub Copilot 같은 AI 도우미가 탑재된 IDE가 대세로 자리 잡고 있습니다. 하지만 이 책에서는 **Antigravity IDE**를 핵심 도구로 선택했습니다. 갑자기 이 도구가 튀어나온 배경은 무엇일까요?
 
+![](.gitbook/assets/google_antigravity_logo.png)
+
 ### 1권 구글 생태계와의 완벽한 연속성
 
 1권에서 우리는 Google Stitch로 디자인을 뽑고, Gemini API로 맞춤형 가이드를 생성했습니다. Antigravity IDE에는 구글의 최신 제미나이(Gemini) 모델이 네이티브로 깊숙이 내장되어 있어, 우리가 1권에서 익숙해진 구글 생태계의 철학과 완벽하게 이어집니다.
