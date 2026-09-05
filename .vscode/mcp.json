@@ -1,0 +1,11 @@
+{
+  "servers": {
+    "gitbook": {
+      "type": "http",
+      "serverUrl": "https://mcp.gitbook.com/mcp",
+      "headers": {
+        "Authorization": "Bearer gb_api_DbHPxbMWVvLOiDUEZltTP5HffLQ0CGWxoiLR1xNb"
+      }
+    }
+  }
+}
