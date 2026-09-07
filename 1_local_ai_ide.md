@@ -61,7 +61,7 @@
 {% step %}
 **새 작업 공간(Folder) 열기**
 
-- 상단 메뉴의 `File` → `Open Folder`를 눌러, 앞으로 2권의 프로젝트를 진행할 전용 폴더(예: `my-vue-app`)를 새로 만들고 열어줍니다.
+- 상단 메뉴의 `File` → `Open Folder`를 눌러, 앞으로 2권의 프로젝트를 진행할 전용 폴더(예: `s-local-mate-vue`)를 새로 만들고 열어줍니다.
   {% endstep %}
 
 {% step %}
