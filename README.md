@@ -97,7 +97,7 @@ Stripe 문서가 영어라 막막해도 괜찮습니다.\
 | v0.1 | 2026/09/05 | 프리뷰 버전 공개 |
 |      |            |           |
 
-**저자: JJ \_with AI**\_\*\* ([**comseong@gmail.com**](https://app.gitbook.com/s/nDUP8xZ7pbezrK2wo5dX/#jj-comseong-gmail.com))\*\*
+**저자: JJ&#x20;**_**with AI**_ ([**comseong@gmail.com**](https://app.gitbook.com/s/nDUP8xZ7pbezrK2wo5dX/#jj-comseong-gmail.com))
 
 **저작권:** [**https://creativecommons.org/licenses/by-nc-sa/4.0/**](https://creativecommons.org/licenses/by-nc-sa/4.0/deed.ko)**​**
 
