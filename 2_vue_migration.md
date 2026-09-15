@@ -65,7 +65,11 @@ samarkand-local-mate/
         └── FooterSection.vue       ← 푸터
 ```
 
-그러나, 생성된 파일이 책과 100% 같지 않을 수 있음을 늘 유념합니다. 그것은 AI가 기본적으로 갖는 특성인데 동일한 프롬프트에 대해 100% 동일한 결과를 보장하지 않기 때문입니다.
+기존의 html 한 개로 완성체였던 우리의 앱이 이제는 여러개의 vue 파일로 쪼개졌습니다. 이 vue 파일 하나하나가 콤포넌트(component)라고 불리며, 일종에 완성된 프로그램의 각 개별 부품이라고 생각하면 이해하기 쉽습니다. App.vue 파일은 이러한 부품들을 조립하는 설명서 같은 역할을 합니다.
+
+{% hint style="warning" %}
+그러나, AI가 생성한 여러분들 컴퓨터에 있는 파일이 책 내용과 100% 같지 않을 수 있음을 늘 유념해야 합니다. 그것은 AI가 기본적으로 갖는 특성인데 동일한 프롬프트에 대해 100% 동일한 결과를 보장하지 않기 때문입니다.
+{% endhint %}
 
 {% hint style="info" %}
 **💡 앞으로 작업이 끝날 때마다 커밋을 AI에게 위임하세요**
@@ -146,23 +150,35 @@ const toggleMobileMenu = () => {
 
 ### `{{ }}` — "이 데이터를 여기에 표시해줘"
 
-위 `TopNavbar.vue` 코드에서 `{{ mobileMenuOpen ? 'close' : 'menu' }}`라는 표현이 보입니다. 이중 중괄호 `{{ }}`는 **"이 변수의 현재 값을 HTML에 끼워 넣어줘"**라는 Vue만의 표현 방식입니다.
+이중 중괄호 `{{ }}`는 **"자바스크립트 변수의 값을 HTML 화면에 쏙 끼워 넣어줘"**라는 뜻의 Vue 핵심 문법입니다. (모양이 콧수염을 닮았다고 해서 '머스태시(Mustache)'라고도 부릅니다.)
 
-1권에서는 이렇게 값을 직접 집어넣었습니다:
+1권에서는 관광객 이름이나 추천 가이드 이름을 화면에 띄우기 위해 이렇게 DOM을 일일이 찾아서 집어넣었습니다:
 
 ```javascript
-// 1권 바닐라 JS: DOM을 직접 찾아서 텍스트를 교체해야 했음
-document.getElementById("menu-icon").innerText = isOpen ? "close" : "menu";
+// 1권 바닐라 JS: 태그를 직접 찾아서(getElementById) 값을 꽂아줘야 했음
+document.getElementById("resName").innerText = userName;
 ```
 
-Vue에서는 이렇게 합니다:
+Vue에서는 복잡한 과정 없이, HTML 태그 안에 **`{{ 변수이름 }}`**만 쏙 넣어두면 끝납니다:
 
 ```html
-<!-- Vue: 변수 이름만 써두면 값이 바뀔 때 화면이 알아서 업데이트됨 -->
-<span>{{ mobileMenuOpen ? 'close' : 'menu' }}</span>
+<!-- Vue: 변수 이름만 적어두면 값이 바뀔 때 화면이 알아서 업데이트됨 -->
+<p><strong>이름:</strong> {{ userName }}</p>
 ```
 
-`mobileMenuOpen` 값이 `false`에서 `true`로 바뀌는 순간, `<span>` 안의 텍스트가 `menu`에서 `close`로 **자동으로** 바뀝니다. `document.getElementById`를 다시 호출할 필요가 없습니다.
+자바스크립트에서 `userName` 값이 바뀌면, `document.getElementById`를 다시 호출하지 않아도 **화면의 글자가 알아서 저절로 업데이트**됩니다.
+
+{% hint style="info" %}
+**💡 잠깐, 앞서 본 `TopNavbar.vue`의 `{{ mobileMenuOpen ? 'close' : 'menu' }}`는 뭔가요?**
+
+`{{ }}` 안에는 단순한 변수 이름뿐 아니라, **간단한 자바스크립트 계산식이나 조건식**도 자유롭게 넣을 수 있습니다.
+
+여기 쓰인 `?`와 `:`는 자바스크립트의 **삼항 연산자(한 줄짜리 미니 if-else문)**입니다:
+- `mobileMenuOpen ? 'close' : 'menu'`
+- **풀어서 읽기**: "메뉴가 열려있니(`true`)? 그럼 `'close'` 글자를 띄우고, 닫혀있니(`false`)? 그럼 `'menu'` 글자를 띄워줘!"
+
+즉, 메뉴가 열리고 닫힐 때마다 버튼 아이콘 모양을 자동으로 교체하기 위해 쓰인 영리한 한 줄입니다.
+{% endhint %}
 
 ---
 
