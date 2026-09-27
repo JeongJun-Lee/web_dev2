@@ -15,24 +15,24 @@ TypeScript를 처음 보면 낯설어 보이지만, 실은 여러분이 이미 �
 JavaScript 변수가 딱 이런 상황입니다.
 
 ```javascript
-// JavaScript — 변수에 라벨이 없음
-let price = 50000;
+// samarkand-local-mate에서 하루 투어 비용(달러)을 계산할 때
+let tourPrice = 50; // $50
 
 // 나중에 누군가 실수로 문자열을 넣어도 아무도 모름
-price = "오만원"; // 😱 에러 없이 그냥 통과
+tourPrice = "오십달러"; // 😱 에러 없이 그냥 통과
 
-// 이제 price를 숫자로 써야 하는 곳에서 앱이 터짐
-console.log(price * 1.1); // NaN (숫자가 아님)
+// 이제 tourPrice를 숫자로 써야 하는 곳에서 앱이 터짐
+console.log(tourPrice * 1.1); // NaN (숫자가 아님)
 ```
 
 TypeScript는 상자에 라벨을 붙이는 것입니다.
 
 ```typescript
 // TypeScript — 변수에 라벨(타입)이 붙음
-let price: number = 50000;
+let tourPrice: number = 50;
 
 // 다른 종류를 넣으려 하면 즉시 에러!
-price = "오만원"; // ❌ 에디터에 빨간 줄!
+tourPrice = "오십달러"; // ❌ 에디터에 빨간 줄!
 // 오류: 'string' 형식은 'number' 형식에 할당할 수 없습니다
 ```
 
@@ -40,16 +40,16 @@ price = "오만원"; // ❌ 에디터에 빨간 줄!
 
 ### 실제 사고 사례
 
-가격을 화면에 표시하는 함수를 봅시다.
+투어 가격을 화면에 표시하는 함수를 봅시다.
 
 ```javascript
 // JavaScript — 함수가 무엇을 받는지 아무 보장이 없음
-function showPrice(price) {
-  return price.toFixed(0) + "원"; // toFixed는 숫자에만 있는 기능
+function formatTourPrice(price) {
+  return "$" + price.toFixed(0); // toFixed는 숫자에만 있는 기능
 }
 
 // 누군가 문자열을 실수로 넘김
-showPrice("50000");
+formatTourPrice("50");
 // 💥 실행 시 오류: "price.toFixed is not a function"
 //    사용자가 실제로 앱을 쓰다가 이 오류를 만남!
 ```
@@ -58,13 +58,13 @@ TypeScript였다면:
 
 ```typescript
 // TypeScript — 함수가 무엇을 받는지 미리 선언
-function showPrice(price: number) {
-  return price.toFixed(0) + "원";
+function formatTourPrice(price: number) {
+  return "$" + price.toFixed(0);
 }
 
 // 에디터에서 즉시 빨간 줄! 실행 전에 잡힘 ✅
-showPrice("50000");
-//         ^^^^^^^
+formatTourPrice("50");
+//              ^^^^
 // 오류: 'string' 형식의 인수는 'number' 형식의 매개 변수에 할당할 수 없습니다
 ```
 
@@ -86,47 +86,47 @@ TypeScript  →  JavaScript   →   실행
 
 ## 2. 기본 타입 — 딱 5가지만 알면 시작할 수 있습니다
 
-TypeScript의 타입 표기법은 단순합니다. 변수 이름 뒤에 **`: 타입이름`** 을 붙이는 것이 전부입니다.
+TypeScript의 타입 표기법은 단순합니다. 변수 이름 뒤에 **`: 타입이름`** 을 붙이는 것이 전부입니다. `samarkand-local-mate`에서 실제로 쓰이는 변수들을 예로 살펴봅시다.
 
 ```typescript
 // JavaScript — 타입 없음
-let guideName = "알리";
-let price = 50000;
-let isAvailable = true;
+let guideName = "알리셰르";
+let tourPrice = 50;
+let isModalOpen = false;
 
 // TypeScript — 콜론(:) 뒤에 타입만 추가
-let guideName: string = "알리";
-let price: number = 50000;
-let isAvailable: boolean = true;
+let guideName: string = "알리셰르";
+let tourPrice: number = 50;
+let isModalOpen: boolean = false;
 ```
 
 ### 5가지 기본 타입
 
-| 타입         | 의미            | 예시                 |
+| 타입         | 의미            | `samarkand-local-mate` 실제 예시 |
 | ---------- | ------------- | ------------------ |
-| `string`   | 문자열 (텍스트)     | `'알리'`, `"안녕하세요"`  |
-| `number`   | 숫자 (정수·소수 모두) | `42`, `3.14`, `-7` |
-| `boolean`  | 참 또는 거짓       | `true`, `false`    |
-| `string[]` | 문자열 배열        | `['한국어', '영어']`    |
-| `number[]` | 숫자 배열         | `[1, 2, 3]`        |
+| `string`   | 문자열 (텍스트)     | `'알리셰르'`, `'history'`, `'홍길동'` |
+| `number`   | 숫자 (정수·소수 모두) | `4.9` (평점), `50` (투어 비용), `1` (가이드 ID) |
+| `boolean`  | 참 또는 거짓       | `isModalOpen` (모달 열림 여부), `isLoading` |
+| `string[]` | 문자열 배열        | `['한국어', '우즈베크어', '러시아어']` (구사 언어 목록) |
+| `number[]` | 숫자 배열         | `[4.9, 4.8, 5.0]` (가이드 평점 목록) |
 
 일상 언어로 대응시켜보면:
 
 * `string` = 이름, 주소, 설명처럼 **글자로 된 것**
 * `number` = 가격, 평점, 나이처럼 **숫자인 것**
-* `boolean` = 예약 가능 여부처럼 **예/아니오 두 가지 중 하나인 것**
+* `boolean` = 모달 열림 여부, 로딩 여부처럼 **예/아니오 두 가지 중 하나인 것**
 
 ### 타입을 잘못 쓰면 어떻게 되나요?
 
 ```typescript
-let guideName: string = "알리";
+let guideName: string = "알리셰르";
 guideName = 42; // ❌ 빨간 줄: string에 number를 넣을 수 없음
 
-let price: number = 50000;
-price = "오만원"; // ❌ 빨간 줄: number에 string을 넣을 수 없음
+let tourPrice: number = 50;
+tourPrice = "오십달러"; // ❌ 빨간 줄: number에 string을 넣을 수 없음
 
-let isAvailable: boolean = true;
-isAvailable = "yes"; // ❌ 빨간 줄: boolean에 string을 넣을 수 없음
+let isModalOpen: boolean = false;
+isModalOpen = "yes"; // ❌ 빨간 줄: boolean에 string을 넣을 수 없음
 ```
 
 에디터에서 즉시 빨간 줄로 알려줍니다. 실행해보기 전에 실수를 알 수 있습니다.
@@ -138,7 +138,7 @@ isAvailable = "yes"; // ❌ 빨간 줄: boolean에 string을 넣을 수 없음
 
 ```typescript
 // 타입을 직접 쓰지 않아도
-let guideName = "알리";
+let guideName = "알리셰르";
 // TypeScript가 자동으로 string으로 추론함
 
 // 이후 숫자를 넣으려 하면 자동으로 에러 발생
@@ -156,11 +156,11 @@ guideName = 42; // ❌ 오류: string에 number를 넣을 수 없음
 // 문자열 하나
 let language: string = "한국어";
 
-// 문자열 여러 개 (배열)
-let languages: string[] = ["한국어", "영어", "우즈벡어"];
+// 문자열 여러 개 (배열) — 가이드가 구사하는 언어 목록
+let languages: string[] = ["한국어", "우즈베크어", "러시아어"];
 
-// 숫자 배열
-let ratings: number[] = [4.5, 4.8, 4.2];
+// 숫자 배열 — 등록된 가이드들의 평점 목록
+let ratings: number[] = [4.9, 4.8, 5.0];
 ```
 
 투어 가이드 한 명이 여러 언어를 구사할 수 있으므로 `string[]`으로 선언합니다.
@@ -170,11 +170,11 @@ let ratings: number[] = [4.5, 4.8, 4.2];
 배열 타입이 있으면 배열 안에 이상한 것이 섞이는 걸 막아줍니다.
 
 ```typescript
-let languages: string[] = ["한국어", "영어"];
+let languages: string[] = ["한국어", "우즈베크어"];
 
 // 배열에 숫자를 넣으려 하면 에러
 languages.push(42); // ❌ 빨간 줄!
-languages.push("우즈벡어"); // ✅ 정상
+languages.push("러시아어"); // ✅ 정상
 
 // 배열 요소를 꺼내 쓸 때 타입도 자동으로 알고 있음
 const first = languages[0]; // TypeScript가 first는 string임을 앎
@@ -187,32 +187,32 @@ first.toUpperCase(); // ✅ 문자열 메서드 자동완성 가능
 
 `|`(파이프) 기호는 "이 중 하나여야 해"를 의미합니다.
 
-예약의 상태는 딱 세 가지 값 중 하나여야 합니다 — 대기 중, 확정, 취소. 이 외의 값이 들어오면 바로 에러로 잡아야 합니다.
+`samarkand-local-mate`의 가이드 매칭 폼을 떠올려보세요. 여행자가 선택할 수 있는 관심 투어는 역사(`history`), 미식(`food`), 사진(`photo`) 딱 3가지뿐이어야 합니다. 이 외의 오타나 엉뚱한 값이 들어오면 즉시 에러로 잡아야 합니다.
 
 ```typescript
-// ❌ 유니온 타입 없이 — 어떤 문자열이든 들어올 수 있어 위험
-let status: string = "cancellled"; // 오타! 하지만 에러 없음 😱
+// ❌ 유니온 타입 없이 — 어떤 문자열이든 들어올 수 있어 오타에 무방비
+let tourType: string = "histroy"; // 😱 'history'의 오타지만 에러 없이 통과!
 
-// ✅ 유니온 타입으로 — 세 값 외에는 에러 발생
-let status: "pending" | "confirmed" | "cancelled";
-status = "cancellled"; // ← TypeScript 에러! 오타를 즉시 잡아줌 ✅
+// ✅ 유니온 타입으로 — samarkand-local-mate가 제공하는 3가지 투어 유형만 허용
+let tourType: "history" | "food" | "photo";
+tourType = "histroy"; // ← TypeScript 에러! 오타를 즉시 잡아줌 ✅
 ```
 
-에러 메시지: `Type '"cancellled"' is not assignable to type '"pending" | "confirmed" | "cancelled"'`
+에러 메시지: `Type '"histroy"' is not assignable to type '"history" | "food" | "photo"'`
 
-단순히 문자열로 선언했다면 절대 잡지 못할 오타를 TypeScript가 잡아줍니다.
+단순히 문자열(`string`)로 선언했다면 런타임에 엉뚱한 결과가 나오고 나서야 알았을 오타를, TypeScript가 코드를 쓰는 순간 잡아줍니다.
 
 ### 유니온 타입 활용 예시
 
 ```typescript
-// 앱의 로딩 상태
-let loadingState: "idle" | "loading" | "success" | "error";
+// samarkand-local-mate의 실제 하루 예산 구간 (GuideModal.vue)
+let budget: "under_30" | "30_60" | "over_60";
 
-loadingState = "loading"; // ✅
-loadingState = "pending"; // ❌ 빨간 줄 — 'pending'은 허용된 값이 아님
+budget = "30_60"; // ✅ 정상 ($30 ~ $60)
+budget = "cheap"; // ❌ 빨간 줄 — 'cheap'은 허용된 값이 아님
 
 // 허용된 값만 쓸 수 있으니, 에디터가 자동완성도 제시해줌
-// loadingState = 'l...' 까지 치면 'loading'을 추천
+// budget = 'u...' 까지만 쳐도 'under_30'을 자동 추천!
 ```
 
 ***
@@ -223,14 +223,14 @@ loadingState = "pending"; // ❌ 빨간 줄 — 'pending'은 허용된 값이 �
 
 ### 객체 = 관련된 데이터를 묶은 것
 
-투어 가이드 한 명의 정보를 코드로 표현한다고 생각해보세요. 이름, 평점, 사용 언어, 하루 비용이 있습니다. 각각 따로 변수를 만들 수 있습니다.
+투어 가이드 한 명의 정보를 코드로 표현한다고 생각해보세요. 이름, 전문 분야, 평점, 구사 언어가 있습니다. 각각 따로 변수를 만들 수 있습니다.
 
 ```javascript
 // 변수를 따로따로 만드는 방식
-let guideName = "알리";
-let guideRating = 4.8;
-let guideLanguages = ["한국어", "영어"];
-let guidePricePerDay = 80000;
+let guideName = "알리셰르";
+let guideSpecialty = "역사 및 고건축";
+let guideRating = "4.9";
+let guideLanguages = "한국어, 우즈베크어, 러시아어";
 ```
 
 하지만 가이드가 10명이면? 변수가 40개가 됩니다. 관리가 불가능해집니다.
@@ -238,12 +238,15 @@ let guidePricePerDay = 80000;
 **객체(Object)**&#xB294; 관련된 여러 정보를 하나로 묶는 방법입니다.
 
 ```javascript
-// 객체로 묶기 — 중괄호 {} 안에 key: value 쌍을 나열
+// 객체로 묶기 — 중괄호 {} 안에 key: value 쌍을 나열 (samarkand-local-mate의 실제 가이드 데이터)
 const guide = {
-  name: "알리",
-  rating: 4.8,
-  languages: ["한국어", "영어"],
-  pricePerDay: 80000,
+  id: 1,
+  name: "알리셰르 (Alisher)",
+  specialty: "역사 및 고건축",
+  tour_type: "history",
+  rating: "4.9",
+  languages: "한국어, 우즈베크어, 러시아어",
+  description: "사마르칸트 국립대 역사학과 출신으로 레기스탄과 샤히진다의 숨겨진 역사를 깊이 있게 전달합니다."
 };
 ```
 
@@ -252,9 +255,9 @@ const guide = {
 객체 안의 값을 꺼내려면 점(`.`)을 씁니다.
 
 ```javascript
-console.log(guide.name); // '알리'
-console.log(guide.rating); // 4.8
-console.log(guide.pricePerDay); // 80000
+console.log(guide.name);      // '알리셰르 (Alisher)'
+console.log(guide.specialty); // '역사 및 고건축'
+console.log(guide.rating);    // '4.9'
 ```
 
 ### 객체의 비유
@@ -280,31 +283,32 @@ const businessCard = {
 여러 개의 투어 가이드 객체를 만들 때, 모양이 다 다르면 어떻게 될까요?
 
 ```javascript
-// 이 객체는 pricePerDay를 씀
-const guide1 = { name: "알리", pricePerDay: 80000 };
+// 이 객체는 specialty를 씀
+const guide1 = { name: "알리셰르", specialty: "역사 및 고건축" };
 
-// 저 객체는 dailyPrice를 씀 (같은 의미인데 이름이 다름!)
-const guide2 = { name: "보보", dailyPrice: 70000 };
+// 저 객체는 expertArea를 씀 (같은 의미인데 이름이 다름!)
+const guide2 = { name: "딜쇼드", expertArea: "로컬 미식" };
 
-// 이 객체는 price를 씀
-const guide3 = { name: "카림", price: 90000 };
+// 이 객체는 category를 씀
+const guide3 = { name: "니고라", category: "포토스팟" };
 ```
 
-세 객체가 모두 "하루 가격"을 가지고 있지만 이름이 다릅니다. 이 객체들을 받아 쓰는 코드는 어떤 이름을 써야 할지 알 수가 없습니다.
+세 객체가 모두 "전문 분야"를 가지고 있지만 이름이 제각각입니다. 이 객체들을 받아 화면에 표시하는 컴포넌트는 어떤 속성 이름을 써야 할지 알 수가 없습니다.
 
 **인터페이스(interface)**&#xB294; 객체의 _모&#xC591;_&#xC744; 미리 약속해두는 것입니다. 건물 설계도처럼, 만들기 전에 어떤 필드를 가져야 하는지 정의합니다.
 
-`interface` 키워드 다음에 이름을 쓰고, 중괄호 안에 각 필드의 이름과 타입을 선언합니다.
+`interface` 키워드 다음에 이름을 쓰고, 중괄호 안에 각 필드의 이름과 타입을 선언합니다. `samarkand-local-mate`의 실제 가이드 인터페이스를 봅시다:
 
 ```typescript
-// 인터페이스 — 가이드 객체는 반드시 이 모양이어야 한다
-interface TourGuide {
-  id: number;
+// samarkand-local-mate의 가이드 설계도 (src/components/ResultSection.vue)
+export interface Guide {
+  id?: number;
   name: string;
-  rating: number; // 1.0 ~ 5.0
-  languages: string[]; // ['한국어', '영어', '우즈벡어']
-  pricePerDay: number;
-  imageUrl: string;
+  specialty?: string;
+  tour_type?: string;
+  rating?: string;
+  languages?: string;
+  description?: string;
 }
 ```
 
@@ -312,22 +316,21 @@ interface TourGuide {
 
 ```typescript
 // 설계도에 맞는 객체 ✅
-const guide: TourGuide = {
+const guide: Guide = {
   id: 1,
-  name: "알리",
-  rating: 4.8,
-  languages: ["한국어", "영어"],
-  pricePerDay: 80000,
-  imageUrl: "/guides/ali.jpg",
+  name: "알리셰르 (Alisher)",
+  specialty: "역사 및 고건축",
+  tour_type: "history",
+  rating: "4.9",
+  languages: "한국어, 우즈베크어, 러시아어",
+  description: "사마르칸트 국립대 역사학과 출신으로 레기스탄과 샤히진다의 숨겨진 역사를 깊이 있게 전달합니다."
 };
 
 // 설계도를 어긴 객체 ❌ — 저장하는 순간 에러!
-const guide2: TourGuide = {
+const guide2: Guide = {
   id: "일", // ← number여야 하는데 string이 들어옴
-  name: "알리",
-  // rating이 빠짐! ← 필수 필드 누락
-  pricePerDay: 80000,
-  imageUrl: "/guides/ali.jpg",
+  // name이 빠짐! ← 필수 필드 누락
+  specialty: "역사 및 고건축"
 };
 ```
 
@@ -349,139 +352,174 @@ TypeScript는 설계도와 다른 건물(데이터)을 짓지 못하게 막아�
 ```javascript
 // ❌ 인터페이스 없음 — 함수가 어떤 모양의 객체를 받는지 모름
 function showGuideCard(guide) {
-  return guide.name + " (" + guide.rating + "점)";
-  // guide.rating이 존재하는지, 숫자인지 아무도 보장 못함
+  return guide.name + " (" + guide.specialty + " · ⭐ " + guide.rating + ")";
+  // guide.specialty나 rating이 존재하는지 아무도 보장 못함
 }
 
 // 잘못된 데이터를 넘겨도 에러 없이 통과
-showGuideCard({ name: "알리", score: 4.8 });
-// rating 없이 score를 씀! 결과: "알리 (undefined점)" 😱
+showGuideCard({ name: "알리셰르", expertArea: "역사 및 고건축", score: "4.9" });
+// specialty 대신 expertArea를 씀! 결과: "알리셰르 (undefined · ⭐ undefined)" 😱
 ```
 
 ```typescript
 // ✅ 인터페이스 있음 — 함수가 정확히 무엇을 받는지 선언됨
-function showGuideCard(guide: TourGuide) {
-  return guide.name + " (" + guide.rating + "점)";
+function showGuideCard(guide: Guide) {
+  return `${guide.name} (${guide.specialty} · ⭐ ${guide.rating})`;
 }
 
 // 잘못된 데이터를 넘기면 즉시 에러
-showGuideCard({ name: "알리", score: 4.8 });
-//             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-// 오류: 'score' 속성은 'TourGuide' 형식에 없습니다
+showGuideCard({ name: "알리셰르", expertArea: "역사 및 고건축", score: "4.9" });
+//             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+// 오류: 개체 리터럴은 알려진 속성만 지정할 수 있으며 'Guide' 형식에 'expertArea'이(가) 없습니다.
 ```
 
 ***
 
-## 7. 프롬프팅: 인터페이스 파일 만들기
+## 7. 프롬프팅: 컴포넌트 간 데이터 전달에 인터페이스 적용하기
 
-이제 AI를 통해 프로젝트 전체의 데이터 구조를 명확히 정의합니다.
+이제 AI를 통해 `samarkand-local-mate` 프로젝트의 컴포넌트들에 타입을 명확히 연결합니다.
 
-> 💬 "우리 앱에서 사용하는 투어 데이터, 가이드 데이터, 사용자 예약 데이터의 구조를 `src/types/index.ts` 파일에 `interface`로 깔끔하게 정의해줘. 그리고 모든 컴포넌트와 함수에서 이 interface를 받아 쓰도록 타입을 다듬어주고, 혹시 남아있는 `any` 타입이나 애매한 타입 선언이 있다면 모두 엄격하게 고쳐줘."
+> 💬 "우리 `samarkand-local-mate` 앱의 컴포넌트들(`GuideModal.vue`, `ResultSection.vue`, `App.vue`)에서 사용하는 `Guide`와 `FormData` 같은 인터페이스를 점검하고, 컴포넌트 간 데이터를 주고받는 `props`, `emit`, 그리고 `ref` 상태 변수에 TypeScript 타입을 엄격하게 연결해줘."
 
-AI가 생성하는 `src/types/index.ts`:
+AI가 컴포넌트들에 작성한 실제 코드를 살펴봅시다:
 
-```typescript
-// src/types/index.ts — 프로젝트 전체의 데이터 설계도 모음
+### 1. `src/components/GuideModal.vue` — 폼 입력 규격과 이벤트 정의
 
-export interface TourGuide {
-  id: number;
-  name: string;
-  rating: number; // 1.0 ~ 5.0
-  languages: string[]; // ['한국어', '영어', '우즈벡어']
-  pricePerDay: number;
-  imageUrl: string;
-  bio?: string; // ? 가 붙으면 선택적(없어도 됨)
+```vue
+<!-- src/components/GuideModal.vue -->
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue';
+
+// 1. 여행자가 입력하는 취향 폼 데이터 설계도 선언 및 export
+export interface FormData {
+  userName: string;
+  tourType: string;
+  tourLabel: string;
+  budget: string;
+  budgetLabel: string;
+  startDate: string;
+  endDate: string;
 }
 
-export interface Tour {
-  id: number;
-  title: string;
-  description: string;
-  guideId: number;
-  maxParticipants: number;
-  durationHours: number;
-  tags: string[];
-}
+// 2. 부모(App.vue)로부터 전달받는 props 타입
+const props = defineProps<{
+  isOpen: boolean; // 모달이 열려 있는지 여부 (참/거짓)
+}>();
 
-export interface Booking {
-  id: number;
-  guideId: number;
-  userId: number;
-  date: string; // 'YYYY-MM-DD'
-  status: "pending" | "confirmed" | "cancelled";
-  totalPrice: number;
-}
-
-export interface User {
-  id: number;
-  email: string;
-  name: string;
-  createdAt: string;
-}
+// 3. 부모(App.vue)로 올려보내는 emit 이벤트 타입 정의
+const emit = defineEmits<{
+  (e: 'close'): void;
+  (e: 'submit', data: FormData): void; // submit 이벤트 발생 시 반드시 FormData 규격 강제!
+}>();
+</script>
 ```
 
-AI가 이 파일을 만들면서 동시에 각 `.vue` 컴포넌트에도 타입을 연결합니다:
+### 2. `src/components/ResultSection.vue` — 추천 가이드 목록 타입 정의
 
-```typescript
-// GuideCard.vue — 타입을 불러와 사용
+```vue
+<!-- src/components/ResultSection.vue -->
 <script setup lang="ts">
-import type { TourGuide } from '@/types'
+// 가이드 데이터 설계도 선언 및 export
+export interface Guide {
+  id?: number;
+  name: string;
+  specialty?: string;
+  tour_type?: string;
+  rating?: string;
+  languages?: string;
+  description?: string;
+}
 
-const props = defineProps<{
-  guide: TourGuide  // TourGuide 설계도를 따르는 객체만 받을 수 있음
-}>()
+// 부모 컴포넌트로부터 받는 props 타입 정의
+defineProps<{
+  isVisible: boolean;
+  isLoading: boolean;
+  errorMessage?: string;
+  userName: string;
+  tourName: string;
+  budgetName: string;
+  guides: Guide[];              // ← Guide 객체들의 배열!
+  isAiLoading: boolean;
+  aiRecommendation: string;
+}>();
+</script>
+```
+
+### 3. `src/App.vue` — 최상위 컴포넌트에서 타입 연결
+
+```vue
+<!-- src/App.vue -->
+<script setup lang="ts">
+import { ref, nextTick } from 'vue';
+import GuideModal, { FormData } from './components/GuideModal.vue';
+import ResultSection, { Guide } from './components/ResultSection.vue';
+
+const isModalOpen = ref(false);
+const showResult = ref(false);
+const isLoading = ref(false);
+const isAiLoading = ref(false);
+const errorMessage = ref('');
+
+// ref 상태 변수에 Guide[] 타입 명시 (가이드 배열만 들어올 수 있음)
+const guides = ref<Guide[]>([]);
+const aiRecommendation = ref('');
+
+// 자식 컴포넌트(GuideModal)에서 올려준 formData의 타입 검증
+const handleFormSubmit = async (formData: FormData) => {
+  resUserName.value = formData.userName;
+  resTourName.value = formData.tourLabel;
+  resBudgetName.value = formData.budgetLabel;
+  // ...
+};
 </script>
 ```
 
 ### `export`와 `import`는 왜 쓰나요?
 
-`export`는 이 인터페이스를 다른 파일에서 가져다 쓸 수 있게 내보내는 것입니다. `import type { TourGuide } from '@/types'`는 그 인터페이스를 가져오는 것입니다. 전체 프로젝트에서 같은 설계도를 공유하기 위한 구조입니다.
+`GuideModal.vue`에서 `export interface FormData`로 설계도를 내보내고, `App.vue`에서 `import { FormData } from './components/GuideModal.vue'`로 가져옵니다.
+
+컴포넌트가 달라도 하나의 동일한 설계도를 공유하므로, 모달에서 올려준 데이터의 필드명(`formData.userName`)과 부모가 받는 필드명이 100% 일치함을 TypeScript가 보증합니다.
 
 ```
-  내가 만든 설계도          다른 파일에서 가져다 씀
-src/types/index.ts  →  GuideCard.vue, GuideList.vue, ...
-(export interface)      (import type { TourGuide })
+   설계도를 만든 곳                       가져다 쓰는 곳
+GuideModal.vue               →              App.vue
+(export interface FormData)      (import { FormData }, handleFormSubmit)
 ```
 
 ***
 
-### `bio?: string` — 선택적 필드(Optional)
+### `specialty?: string` — 선택적 필드(Optional)
 
-`?`가 붙은 필드는 있어도 되고 없어도 됩니다. 모든 가이드가 자기소개문을 가지고 있지는 않으니, `bio`는 선택적으로 선언합니다.
+`?`가 붙은 필드는 **있어도 되고 없어도 되는 필드**입니다. `Guide` 인터페이스를 다시 봅시다:
 
 ```typescript
-interface TourGuide {
-  id: number;
-  name: string;
-  rating: number;
-  languages: string[];
-  pricePerDay: number;
-  imageUrl: string;
-  bio?: string; // ← ? 가 붙으면 선택적(없어도 됨)
+export interface Guide {
+  id?: number;          // ? 붙음: ID가 없어도 됨 (임시 데이터 등)
+  name: string;         // ? 없음: 이름은 필수!
+  specialty?: string;   // ? 붙음: 전문 분야 (생략 가능)
+  tour_type?: string;   // ? 붙음: 투어 유형
+  rating?: string;      // ? 붙음: 평점
+  languages?: string;   // ? 붙음: 구사 언어
+  description?: string; // ? 붙음: 상세 설명
 }
 ```
 
 ```typescript
-// bio 없이도 유효한 TourGuide ✅
-const guide: TourGuide = {
-  id: 1,
-  name: "알리",
-  rating: 4.8,
-  languages: ["한국어"],
-  pricePerDay: 80000,
-  imageUrl: "/guides/ali.jpg",
-  // bio 없어도 OK
+// 필수 필드 name만 있어도 유효한 Guide ✅
+const simpleGuide: Guide = {
+  name: "알리셰르"
+  // description이나 specialty가 없어도 에러 없음!
 };
 
-// bio 있어도 유효 ✅
-const guide2: TourGuide = {
-  id: 2,
-  name: "보보",
-  rating: 4.5,
-  languages: ["영어", "우즈벡어"],
-  pricePerDay: 70000,
-  imageUrl: "/guides/bobo.jpg",
-  bio: "사마르칸트 태생, 10년 경력의 현지 가이드입니다.",
+// 모든 상세 정보가 다 채워진 Guide ✅
+const fullGuide: Guide = {
+  id: 1,
+  name: "알리셰르 (Alisher)",
+  specialty: "역사 및 고건축",
+  tour_type: "history",
+  rating: "4.9",
+  languages: "한국어, 우즈베크어, 러시아어",
+  description: "사마르칸트 국립대 역사학과 출신으로 레기스탄과 샤히진다의 숨겨진 역사를 깊이 있게 전달합니다."
 };
 ```
 
@@ -491,26 +529,27 @@ const guide2: TourGuide = {
 
 ```typescript
 // 기본 가이드 인터페이스
-interface TourGuide {
-  id: number;
+interface Guide {
+  id?: number;
   name: string;
-  rating: number;
+  specialty?: string;
+  rating?: string;
 }
 
-// extends — 기존 설계도를 그대로 물려받아 확장
-interface DetailedTourGuide extends TourGuide {
-  // TourGuide의 모든 필드(id, name, rating)를 자동으로 포함
-  bio: string;
-  availableDates: string[];
+// extends — 기존 가이드 설계도를 물려받고, AI 추천 분석 정보를 확장
+interface RecommendedGuide extends Guide {
+  // Guide의 모든 필드(id, name, specialty, rating)를 자동으로 포함하면서 추가:
+  aiReason: string;    // Gemini AI가 이 여행자에게 맞춤 추천한 이유
+  matchScore: number;  // 취향 일치도 점수 (예: 98%)
 }
 ```
 
-`DetailedTourGuide`는 `TourGuide`의 모든 필드를 자동으로 포함하면서, 추가 필드를 더 가집니다.
+`RecommendedGuide`는 `Guide`의 모든 필드를 자동으로 포함하면서, 추가 필드를 더 가집니다.
 
 언제 확장을 쓰나요?
 
-* 목록 화면: 간단한 `TourGuide`만 필요 (이름, 평점, 가격)
-* 상세 화면: `DetailedTourGuide`가 필요 (바이오, 예약 가능 날짜)
+* 기본 목록 화면: 간단한 `Guide`만 필요 (이름, 전문 분야, 평점)
+* AI 추천 화면: `RecommendedGuide`가 필요 (AI 추천 사유, 매칭 점수)
 * API 응답마다 돌아오는 필드가 다를 때
 
 ### 상속의 비유
@@ -553,16 +592,21 @@ Argument of type 'string' is not assignable to parameter of type 'number'
 한국어 번역: "string 타입의 값을 number 타입의 매개변수에 전달할 수 없습니다"
 
 ```typescript
-// 원인: HTML <input>에서 가져온 값은 항상 문자열!
-const priceInput = document.querySelector<HTMLInputElement>("#price");
-const price = priceInput.value; // "50000" ← 따옴표 있음! string!
+// 원인: HTML <input>이나 URL 파라미터에서 가져온 값은 항상 문자열!
+// samarkand-local-mate에서 URL 파라미터의 가이드 ID("1")를 조회 함수에 넘길 때
+const inputId = "1"; // string (문자열)
 
-saveGuide({ pricePerDay: price });
-//                        ^^^^^
+function findGuideById(id: number) {
+  // id는 반드시 숫자여야 함
+  return sampleGuides.find(g => g.id === id);
+}
+
+findGuideById(inputId);
+//            ^^^^^^^
 // 에러: string은 number에 할당할 수 없음
 
-// 해결: Number()로 숫자로 변환
-saveGuide({ pricePerDay: Number(price) }); // 50000 ← 숫자로 변환됨 ✅
+// 해결: Number()로 숫자로 변환 후 전달
+findGuideById(Number(inputId)); // ✅ 정상 동작
 ```
 
 **에러 2: 없을 수도 있는 값(`null`)을 그냥 쓸 때**
@@ -571,36 +615,42 @@ saveGuide({ pricePerDay: Number(price) }); // 50000 ← 숫자로 변환됨 ✅
 Object is possibly 'null'
 ```
 
+`samarkand-local-mate`의 `src/App.vue`에 실제로 작성되어 있는 코드를 봅시다:
+
 ```typescript
-// querySelector가 요소를 못 찾으면 null을 반환함
-const button = document.querySelector("#submit-btn");
-button.click(); // ❌ button이 null일 수도 있어서 에러!
+// src/App.vue의 실제 코드 (결과 섹션으로 화면 스크롤 이동)
+await nextTick();
+const section = document.getElementById('resultSection');
 
-// 해결 1: null 체크 후 사용
-if (button) {
-  button.click(); // ✅ null이 아닌 경우에만 실행
+// ❌ if 체크 없이 바로 쓰면 TypeScript 에러 발생!
+// section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+// ^^^^^^^ 오류: 'section'은(는) 'null'일 수 있습니다 (Object is possibly 'null')
+
+// ✅ 해결: null 체크로 안전망 확보 (App.vue에 실제 적용된 패턴)
+if (section) {
+  section.scrollIntoView({ behavior: 'smooth', block: 'center' }); // ✅ null이 아닐 때만 안전하게 실행
 }
-
-// 해결 2: 옵셔널 체이닝 문법 — null이면 그냥 건너뜀
-button?.click(); // ✅
 ```
+
+`document.getElementById`는 해당 ID의 HTML 요소를 찾지 못하면 `null`을 반환합니다. TypeScript는 "요소가 없을 수도 있는데 바로 함수를 호출하면 앱이 멈춘다"고 경고해주는 것입니다.
 
 **에러 3: 인터페이스에 없는 필드를 쓸 때**
 
 ```
-Property 'score' does not exist on type 'TourGuide'
+Property 'score' does not exist on type 'Guide'
 ```
 
-한국어 번역: "'TourGuide' 타입에 'score' 속성이 없습니다"
+한국어 번역: "'Guide' 타입에 'score' 속성이 없습니다"
 
 ```typescript
-const guide: TourGuide = {
-  /* ... */
+const guide: Guide = {
+  name: "알리셰르 (Alisher)",
+  rating: "4.9"
 };
 
-// TourGuide에는 score가 없고 rating이 있음
-console.log(guide.score); // ❌ 오류!
-console.log(guide.rating); // ✅ 정상
+// Guide 인터페이스에는 score가 없고 rating이 있음
+console.log(guide.score);  // ❌ 오류!
+console.log(guide.rating); // ✅ 정상: "4.9"
 ```
 
 이 에러는 오히려 좋은 것입니다. 오타를 쳤거나 잘못된 필드명을 썼다는 걸 즉시 알 수 있습니다.
@@ -623,14 +673,14 @@ TypeScript 인터페이스가 정의되어 있으면, AI가 코드를 훨씬 정
 
 ```
 ❌ 타입 없이 프롬프팅:
-   "가이드 카드 컴포넌트 만들어줘"
-   → AI가 어떤 필드가 있는지 추측해서 코드를 짜야 함
-   → guide.price? guide.pricePerDay? guide.dailyFee? 뭐가 맞는지 모름
+   "추천 결과 화면 컴포넌트(ResultSection) 만들어줘"
+   → AI가 가이드 객체에 어떤 필드가 있는지 추측해서 코드를 작성함
+   → guide.score? guide.rating? guide.price? 뭐가 맞는지 몰라 엉뚱한 필드를 참조
 
 ✅ 타입 있는 상태에서 프롬프팅:
-   "TourGuide 인터페이스를 props로 받는 가이드 카드 컴포넌트 만들어줘"
-   → AI가 인터페이스를 보고 정확한 필드명으로 코드를 생성
-   → guide.pricePerDay, guide.languages 등 오타 없음
+   "Guide 인터페이스 배열(guides: Guide[])을 props로 받는 ResultSection 컴포넌트 만들어줘"
+   → AI가 Guide 설계도를 보고 guide.name, guide.specialty, guide.rating을 정확하게 화면에 바인딩
+   → 필드명 오타나 누락 없는 무결점 코드 생성!
 ```
 
 인터페이스는 AI와의 소통 채널이기도 합니다. 인터페이스가 잘 정의될수록 AI가 더 정확한 코드를 만들어 줍니다.
@@ -640,9 +690,9 @@ TypeScript 인터페이스가 정의되어 있으면, AI가 코드를 훨씬 정
 타입이 있으면 에디터가 쓸 수 있는 것들을 미리 알려줍니다.
 
 ```typescript
-const guide: TourGuide = { /* ... */ }
+const guide: Guide = { /* ... */ };
 
-guide.  // ← 점을 찍으면 에디터가 id, name, rating, languages, ... 목록을 제시
+guide.  // ← 점을 찍으면 에디터가 name, specialty, tour_type, rating, languages, description 목록을 자동완성으로 제시
         // 오타 없이 정확한 필드명만 선택할 수 있음
 ```
 
@@ -652,40 +702,46 @@ guide.  // ← 점을 찍으면 에디터가 id, name, rating, languages, ... �
 
 ## 11. `tsconfig.json` — TypeScript 엄격함 조절하기
 
-TypeScript 컴파일러 설정 파일 `tsconfig.json`을 열어봅니다.
-
-> 💬 "이 tsconfig.json에서 가장 중요한 옵션 3개만 골라서 초보자가 이해할 수 있게 설명해줘."
+`samarkand-local-mate` 프로젝트 루트의 TypeScript 컴파일러 설정 파일 `tsconfig.json`을 열어봅니다.
 
 ```json
 {
   "compilerOptions": {
-    "strict": true,
-    "target": "ESNext",
+    "target": "ES2022",
+    "module": "ESNext",
     "moduleResolution": "bundler",
     "paths": {
-      "@/*": ["./src/*"]
-    }
-  }
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    "noEmit": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue"
+  ]
 }
 ```
 
-| 옵션                                | 값       | 의미                             |
-| --------------------------------- | ------- | ------------------------------ |
-| `"strict": true`                  | true    | TypeScript의 가장 엄격한 검사 모드 활성화   |
-| `"target": "ESNext"`              | ESNext  | 최신 JavaScript 문법으로 변환          |
-| `"moduleResolution": "bundler"`   | bundler | Vite 같은 번들러에 맞게 모듈 해석          |
-| `"paths": { "@/*": ["./src/*"] }` | —       | `@/components/...` 같은 절대 경로 별칭 |
+| 옵션 | 설정값 | 의미 |
+| ---- | ------ | ---- |
+| `"target": "ES2022"` | ES2022 | 최신 브라우저가 지원하는 모던 JavaScript 표준으로 변환 |
+| `"moduleResolution": "bundler"` | bundler | Vite 같은 최신 번들러에 맞게 모듈을 해석 |
+| `"paths": { "@/*": ["./src/*"] }` | — | `@/components/GuideModal.vue`처럼 깔끔한 절대 경로 별칭 제공 |
+| `"include": [..., "src/**/*.vue"]` | — | 일반 `.ts` 파일뿐만 아니라 `.vue` 싱글 파일 컴포넌트 안의 `<script setup lang="ts">` 영역까지 완벽하게 타입 검사 |
 
-**`"strict": true`가 가장 중요합니다.** 이것이 활성화되면 TypeScript가 가장 엄격하게 타입을 검사합니다. 처음에는 에러가 많아 불편하지만, 이 옵션 덕분에 나중에 실제 사용자가 마주할 수 있는 런타임 버그의 대부분이 미리 걸러집니다.
+`"paths"` 덕분에 상대 경로 `../../components/...` 대신 `@/components/...`로 간결하게 임포트할 수 있고, `"include"`에 `src/**/*.vue`가 들어있어 모든 Vue 파일에서 TypeScript의 강력한 안전망을 누릴 수 있습니다.
 
 {% hint style="info" %}
-**💡 `strict` 모드가 잡아주는 대표적인 실수들**
+**💡 더 엄격한 검사를 원한다면: `"strict": true`**
 
-* `null`이나 `undefined`일 수 있는 값을 그냥 쓰는 경우
-* 함수의 매개변수 타입을 선언하지 않은 경우
-* 함수가 `return`하지 않을 수도 있는 경우
-
-처음에 빨간 줄이 많이 생겨도 하나씩 AI에게 물어보며 고치다 보면, 어느새 타입을 자연스럽게 쓰고 있는 자신을 발견하게 됩니다.
+더 꼼꼼한 코드 검사를 원한다면 `compilerOptions`에 `"strict": true`를 추가할 수 있습니다.
+* `null`이나 `undefined`일 수 있는 값을 그냥 쓰는 실수 방지
+* 함수의 매개변수 타입 누락 방지
+처음에 빨간 줄이 많이 생겨도 하나씩 AI에게 물어보며 고치다 보면, 버그 없는 튼튼한 앱을 완성할 수 있습니다.
 {% endhint %}
 
 ***
