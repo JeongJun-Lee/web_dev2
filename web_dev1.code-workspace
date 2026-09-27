@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../web_dev1"
+		},
+		{
+			"path": "."
+		},
+		{
+			"path": "../../../dev/samarkand-local-mate"
+		}
+	],
+	"settings": {}
+}
