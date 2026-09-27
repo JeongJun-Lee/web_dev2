@@ -26,12 +26,12 @@
 ⑤  사용자가 링크 클릭 → 다시 ①부터 반복 (페이지 전체 새로고침)
 ```
 
-* **장점**: 서버가 완성된 HTML을 보내주므로, 구글 봇이 내용을 바로 읽을 수 있습니다(SEO — 검색 엔진 최적화, 쉽게 말해 구글 검색 결과 상위에 잘 노출되는 것 — 에 유리). 첫 화면도 빠릅니다.
-* **단점**: 버튼 하나 클릭해도 페이지 전체를 다시 불러와야 합니다. 이때 화면이 깜빡이는 현상(새로고침)이 발생하고, 서버에 매번 부하가 걸립니다.
+- **장점**: 서버가 완성된 HTML을 보내주므로, 구글 봇이 내용을 바로 읽을 수 있습니다(SEO — 검색 엔진 최적화, 쉽게 말해 구글 검색 결과 상위에 잘 노출되는 것 — 에 유리). 첫 화면도 빠릅니다.
+- **단점**: 버튼 하나 클릭해도 페이지 전체를 다시 불러와야 합니다. 이때 화면이 깜빡이는 현상(새로고침)이 발생하고, 서버에 매번 부하가 걸립니다.
 
 > 💡 **실제 예**: 네이버 블로그의 초창기 버전, 옛날 쇼핑몰 사이트들이 이 방식으로 만들어졌습니다.
 
-***
+---
 
 ### 0-2. CSR(Client Side Rendering)과 SPA(Single Page Application) 시대
 
@@ -52,12 +52,12 @@
 
 위 그림에서 보듯이, 클라이언트 쪽에 Vue.js / Angular / React / Svelte 같은 프레임워크가, 서버 쪽에는 Node.js, Express, Nuxt, NestJS, Next.js 같은 JavaScript 기반 서버 기술들이 등장했습니다. 데이터베이스도 MongoDB, PostgreSQL, MariaDB, SQLite 등 다양해졌습니다.
 
-* **장점**: 페이지 전환이 부드럽고 앱처럼 동작합니다. 서버와는 HTML이 아닌 JSON 데이터만 주고받아 훨씬 효율적입니다.
-* **단점**: 처음 페이지를 열면 JavaScript 파일을 다운받고 실행하는 동안 **빈 화면**이 보입니다. 구글 봇도 이 빈 화면만 보게 됩니다. → 바로 지금 우리 앱의 문제입니다!
+- **장점**: 페이지 전환이 부드럽고 앱처럼 동작합니다. 서버와는 HTML이 아닌 JSON 데이터만 주고받아 훨씬 효율적입니다.
+- **단점**: 처음 페이지를 열면 JavaScript 파일을 다운받고 실행하는 동안 **빈 화면**이 보입니다. 구글 봇도 이 빈 화면만 보게 됩니다. → 바로 지금 우리 앱의 문제입니다!
 
 > 💡 **실제 예**: 현재 Gmail, Google Docs, 트위터(X) 등 대부분의 현대 웹 앱이 SPA 방식을 사용합니다.
 
-***
+---
 
 이제 위 두 방식의 문제를 정확히 이해했으니, 본론으로 들어가겠습니다.
 
@@ -73,17 +73,22 @@
 <!-- samarkand-local-mate의 실제 index.html -->
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-  <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-  <title>Samarkand Local Mate | Find Your Local Guide</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"/>
-</head>
-<body class="bg-background text-on-background font-body-md antialiased overflow-x-hidden">
-  <div id="app"></div>
-  <!-- ← 텅 비어 있음! 브라우저가 아래 스크립트를 다운받아 실행하기 전까지는 빈 화면입니다 -->
-  <script type="module" src="/src/main.ts"></script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Samarkand Local Mate | Find Your Local Guide</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body
+    class="bg-background text-on-background font-body-md antialiased overflow-x-hidden"
+  >
+    <div id="app"></div>
+    <!-- ← 텅 비어 있음! 브라우저가 아래 스크립트를 다운받아 실행하기 전까지는 빈 화면입니다 -->
+    <script type="module" src="/src/main.ts"></script>
+  </body>
 </html>
 ```
 
@@ -129,18 +134,18 @@
 
 **Vite-SSG**는 두 세계의 장점을 합칩니다.
 
-* **개발 중**: 빠르고 유연한 Vue SPA처럼 편하게 작업
-* **배포 시**: 각 페이지를 완성된 HTML 파일로 미리 구워서 배포
+- **개발 중**: 빠르고 유연한 Vue SPA처럼 편하게 작업
+- **배포 시**: 각 페이지를 완성된 HTML 파일로 미리 구워서 배포
 
 "SSG(Static Site Generation)"는 "정적 사이트 생성"으로, **빌드 시점에 JavaScript를 미리 실행해서 완성된 HTML을 파일로 저장해두는 기술**입니다. 사용자가 페이지를 요청하면 서버는 이미 만들어진 HTML 파일을 그냥 전달하기만 하면 됩니다.
 
 ### 세 가지 방식 한눈에 비교
 
-| 방식        | HTML을 만드는 시점   | 만드는 장소    | 첫 로딩 속도 | SEO    | 서버 필요 여부        |
-| --------- | -------------- | --------- | ------- | ------ | --------------- |
-| 전통 SSR    | 사용자 요청마다       | 서버        | 빠름      | 강함     | 필요 (항상 실행)      |
-| SPA (CSR) | 브라우저에서 JS 실행 후 | 브라우저      | 느림      | 취약     | 불필요 (정적 파일)     |
-| **SSG**   | **빌드 시 한 번**   | **빌드 서버** | **빠름**  | **강함** | **불필요 (정적 파일)** |
+| 방식      | HTML을 만드는 시점      | 만드는 장소   | 첫 로딩 속도 | SEO      | 서버 필요 여부         |
+| --------- | ----------------------- | ------------- | ------------ | -------- | ---------------------- |
+| 전통 SSR  | 사용자 요청마다         | 서버          | 빠름         | 강함     | 필요 (항상 실행)       |
+| SPA (CSR) | 브라우저에서 JS 실행 후 | 브라우저      | 느림         | 취약     | 불필요 (정적 파일)     |
+| **SSG**   | **빌드 시 한 번**       | **빌드 서버** | **빠름**     | **강함** | **불필요 (정적 파일)** |
 
 SSG는 전통 SSR처럼 빠른 첫 로딩과 SEO를 제공하면서도, 서버 없이 정적 파일만으로 배포할 수 있어서 1권에서 배운 **Cloudflare Pages** 같은 서비스에 그대로 올릴 수 있습니다. 가장 좋은 부분만 쏙 뽑은 방식이라고 할 수 있습니다.
 
@@ -149,18 +154,40 @@ SSG는 전통 SSR처럼 빠른 첫 로딩과 SEO를 제공하면서도, 서버 �
 
 SSG는 "빌드 시점에 미리 만들어두는" 방식이므로, 실시간으로 자주 바뀌는 데이터(예: 실시간 주식 가격, 채팅 메시지)에는 적합하지 않습니다.
 
-현재 수준의 투어 앱의 경우, 가이드 정보나 투어 상품 설명은 자주 바뀌지 않으므로 현재 수준의 SSG를 적용하면 됩니다. 새로운 상품을 추가하면 다시 빌드해서 배포하면 됩니다.
-
-**그러나, 나중에 가이드가 직접 자기 소개를 수시로 수정하는 기능이 필요해진다면?** 걱정하지 마세요 — 이럴 때는 **SSG + 실시간 API 하이브리드** 방식으로 자연스럽게 발전시킬 수 있습니다.
-
-```
-① SSG가 미리 구워둔 HTML이 즉시 화면에 표시됨 (빠른 로딩 + SEO 유지)
-② 화면이 뜬 직후, Vue가 백엔드 API를 호출해 최신 가이드 정보를 가져옴
-③ 화면의 내용을 최신 데이터로 조용히 교체
-```
-
-사용자는 기다림 없이 화면을 보고, 0.2\~0.3초 뒤 최신 정보로 부드럽게 업데이트됩니다. SSG의 속도와 SEO 장점을 유지하면서 실시간 데이터도 함께 쓸 수 있는 실무에서 가장 흔히 쓰는 패턴입니다.
+현재 수준의 투어 앱의 경우, 가이드 정보나 투어 상품 설명은 자주 바뀌지 않으므로 현재 수준의 SSG를 적용하면 충분합니다. 새로운 상품을 추가하면 다시 빌드해서 배포하면 됩니다.
 {% endhint %}
+
+### 💡 더 나아가기: SSG + 실시간 API 하이브리드
+
+**"나중에 가이드가 직접 자기 소개를 수시로 수정하는 기능이 필요해진다면 어떻게 할까요?"**
+
+걱정하지 마세요 — 이럴 때는 **SSG + 실시간 API 하이브리드** 방식으로 자연스럽게 발전시킬 수 있습니다.
+
+하이브리드의 기본 원리는 **"HTML 껍데기(또는 이전 데이터)를 먼저 보여주고, 실시간 최신 데이터를 뒤이어 끼워넣는 것"**입니다. 실무에서는 보통 두 가지 패턴을 사용합니다:
+
+- **패턴 1: 어제 구워둔 데이터 먼저 보여주고 조용히 교체하기 (SWR: Stale-While-Revalidate 패턴 — 투어 앱 추천)**
+  - 사용자가 접속하면 빌드 시점에 구워둔 가이드 소개글이 0.1초 만에 즉시 뜹니다 (사용자는 기다림 없이 바로 글을 읽기 시작합니다).
+  - 화면이 뜨자마자 Vue가 백그라운드에서 조용히 백엔드 API(`/api/guides/alisher`)를 호출해 최신 정보를 확인합니다.
+  - 가이드가 방금 소개글을 수정했다면, 해당 텍스트 부분만 0.3초 뒤에 최신 내용으로 부드럽게 바뀝니다. 로딩 스피너도, 화면 깜빡임도 없습니다.
+- **패턴 2: 골격 껍데기(스켈레톤 UI) 먼저 보여주기 (토스, 유튜브 방식)**
+  - 회색 박스로 된 뼈대(스켈레톤) HTML을 먼저 초고속으로 보여주고, API 응답이 오자마자 실제 데이터로 채웁니다.
+
+```
+① SSG가 미리 구워둔 HTML이 즉시 화면에 표시됨 (초고속 첫 화면 + SEO 완벽 유지)
+② 화면이 뜬 직후, Vue가 백엔드 API를 호출해 혹시 변경된 최신 정보가 있는지 확인
+③ 변경 사항이 있다면 화면의 해당 데이터만 최신으로 부드럽게 교체
+```
+
+{% hint style="info" %}
+**💡 헷갈리기 쉬운 개념: Hydration vs 하이브리드 실시간 API**
+
+- **Hydration (엔진 레벨의 전선 연결)**:
+  새로 입주한 아파트 건물(HTML)에 **전기 배선과 수도관(자바스크립트)**을 연결하는 일입니다. 전기가 통해야 버튼을 눌렀을 때 모달이 열립니다.
+- **하이브리드 실시간 API (데이터 최신화 전략)**:
+  식탁에 **매일 아침 배달되는 신선한 우유(실시간 데이터)**를 채워 넣는 일입니다. 어제 사둔 우유를 꺼내 마시고 있다가, 문앞에 새 우유가 도착하면 새 우유로 바꿔 마시는 것과 같습니다.
+  {% endhint %}
+
+사용자는 하얀 로딩 화면 없이 즉시 콘텐츠를 소비하고, 0.2~0.3초 뒤 최신 정보로 업데이트됩니다. SSG의 속도와 SEO 장점을 100% 누리면서 실시간 데이터도 함께 다룰 수 있는 현대 웹 개발의 표준 아키텍처입니다.
 
 ## 3. 프롬프팅: Vite-SSG 적용하기
 
@@ -182,11 +209,11 @@ npm install -D vite-ssg
 
 ```typescript
 // 기존 main.ts — SPA 방식 (samarkand-local-mate/src/main.ts)
-import { createApp } from 'vue';
-import App from './App.vue';
-import './assets/main.css';
+import { createApp } from "vue";
+import App from "./App.vue";
+import "./assets/main.css";
 
-createApp(App).mount('#app');
+createApp(App).mount("#app");
 //              ↑ 브라우저 DOM의 #app 요소에 앱을 즉시 마운트
 //                브라우저 환경에서만 실행 가능!
 ```
@@ -195,10 +222,10 @@ SSG 방식으로 수정:
 
 ```typescript
 // 수정된 main.ts — SSG 방식
-import { ViteSSG } from 'vite-ssg';
-import App from './App.vue';
-import './assets/main.css';
-import { routes } from './router'; // 라우트 정보 가져오기
+import { ViteSSG } from "vite-ssg";
+import App from "./App.vue";
+import "./assets/main.css";
+import { routes } from "./router"; // 라우트 정보 가져오기
 
 // createApp 대신 ViteSSG를 export
 export const createApp = ViteSSG(App, { routes });
@@ -206,11 +233,11 @@ export const createApp = ViteSSG(App, { routes });
 
 **무엇이 달라졌나요?**
 
-| 항목      | 기존 SPA                   | SSG 방식                 |
-| ------- | ------------------------ | ---------------------- |
-| 가져오는 함수 | `createApp` (vue에서)      | `ViteSSG` (vite-ssg에서) |
-| 동작      | `.mount('#app')` — 즉시 실행 | `export` — 내보내기만 함     |
-| 실행 주체   | 브라우저                     | 빌드 도구 (Vite-SSG)       |
+| 항목          | 기존 SPA                     | SSG 방식                 |
+| ------------- | ---------------------------- | ------------------------ |
+| 가져오는 함수 | `createApp` (vue에서)        | `ViteSSG` (vite-ssg에서) |
+| 동작          | `.mount('#app')` — 즉시 실행 | `export` — 내보내기만 함 |
+| 실행 주체     | 브라우저                     | 빌드 도구 (Vite-SSG)     |
 
 변경의 핵심: `createApp(...).mount()` 대신 `ViteSSG(...)`를 `export`합니다. 빌드 시 Vite-SSG가 이 함수를 가져가서 각 라우트를 미리 방문하고 완성된 HTML을 생성합니다. 마치 "나중에 필요할 때 가져다 쓰세요"라고 완성 레시피를 내놓는 것과 같습니다.
 
@@ -218,15 +245,15 @@ export const createApp = ViteSSG(App, { routes });
 
 ```typescript
 // vite.config.ts
-import vue from '@vitejs/plugin-vue';
-import path from 'path';
-import { defineConfig } from 'vite';
+import vue from "@vitejs/plugin-vue";
+import path from "path";
+import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [vue()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      "@": path.resolve(__dirname, "./src"),
     },
   },
   // vite-ssg는 별도 복잡한 플러그인 설정 없이 main.ts의 createApp export만으로 작동합니다
@@ -252,9 +279,9 @@ export default defineConfig({
 
 **각 스크립트의 역할:**
 
-* `npm run dev`: 개발 서버 실행 (파일 변경 시 자동 새로고침, 포트 3000)
-* `npm run build`: 배포용 정적 HTML 파일 생성 (`dist/` 폴더에 결과물)
-* `npm run preview`: 빌드 결과물을 로컬에서 미리보기
+- `npm run dev`: 개발 서버 실행 (파일 변경 시 자동 새로고침, 포트 3000)
+- `npm run build`: 배포용 정적 HTML 파일 생성 (`dist/` 폴더에 결과물)
+- `npm run preview`: 빌드 결과물을 로컬에서 미리보기
 
 ## 4. 귀납적 이해: 빌드 결과물로 SSG 원리 발견하기
 
@@ -305,16 +332,21 @@ Vite-SSG 빌드 프로세스:
   </nav>
   <main class="max-w-4xl mx-auto p-8">
     <div class="flex items-center space-x-4 mb-6">
-      <div class="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 font-bold text-2xl">
+      <div
+        class="w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 font-bold text-2xl"
+      >
         알
       </div>
       <div>
         <h1 class="text-3xl font-bold text-slate-800">알리셰르 (Alisher)</h1>
-        <p class="text-amber-600 font-medium">역사 및 고건축 전문 가이드 · ⭐ 4.9</p>
+        <p class="text-amber-600 font-medium">
+          역사 및 고건축 전문 가이드 · ⭐ 4.9
+        </p>
       </div>
     </div>
     <p class="text-slate-600 leading-relaxed">
-      사마르칸트 국립대 역사학과 출신으로 레기스탄과 샤히진다의 숨겨진 역사를 깊이 있게 전달합니다.
+      사마르칸트 국립대 역사학과 출신으로 레기스탄과 샤히진다의 숨겨진 역사를
+      깊이 있게 전달합니다.
     </p>
     <div class="mt-4 text-sm text-slate-500">
       구사 가능 언어: 한국어, 우즈베크어, 러시아어
@@ -325,21 +357,76 @@ Vite-SSG 빌드 프로세스:
 
 구글 봇이 이 파일을 읽으면, 내용이 가득한 HTML을 완전히 파악할 수 있습니다. 더 이상 "빈 페이지" 문제가 없습니다!
 
-{% hint style="info" %}
-**💡 Hydration — SSG와 SPA의 결합**
+### 💡 Hydration — 정적 HTML에 생명을 불어넣는 마법
 
-SSG가 만든 HTML 파일을 브라우저가 받으면, 사용자는 즉시 내용을 볼 수 있습니다. 그 후 JavaScript가 로드되면 Vue가 이미 그려진 HTML에 _다시 연결_(hydration)되어 버튼 클릭 등의 인터랙션이 활성화됩니다.
+SSG가 만든 완성된 HTML 파일을 브라우저가 받으면, 사용자는 기다림 없이 화면을 즉시 볼 수 있습니다. 그 후 백그라운드에서 `main.js`가 로드되면, Vue가 이미 그려진 HTML을 분석하여 버튼 클릭이나 폼 입력 같은 **인터랙션(상호작용) 기능을 활성화**합니다. 이 과정을 **Hydration(수분 공급)**이라고 부릅니다.
 
 ```
 1. 브라우저가 HTML 받음      → 즉시 화면에 콘텐츠 표시 (빠름! 👀)
-2. JS 파일 로드·실행        → Vue가 HTML에 연결(hydration)
-3. Hydration 완료         → 버튼, 애니메이션 등 인터랙션 활성화 🖱️
+2. main.js 다운로드 & 실행  → Vue가 기존 HTML에 이벤트 연결 (Hydration)
+3. Hydration 완료         → 버튼 클릭, 모달 열기 등 인터랙션 활성화 🖱️
 ```
 
-**Hydration**이라는 단어가 "수분 공급"을 뜻하는 이유: 말라있는 정적 HTML에 JavaScript라는 "물"을 부어주면 생기를 띄게 된다는 비유입니다. 정적 HTML은 볼 수는 있지만 클릭해도 반응이 없는 상태, hydration 이후에는 완전히 상호작용 가능한 상태가 됩니다.
+**왜 "Hydration(수분 공급)"이라고 부를까요?**
+말라있는 건조한 정적 HTML에 JavaScript라는 "생명수"를 부어주면 살아 숨 쉬게 된다는 비유입니다. 정적 HTML은 눈으로 볼 수는 있지만 버튼을 눌러도 반응이 없는 상태이고, Hydration을 거치고 나면 비로소 사용자와 소통하는 살아있는 웹 앱이 됩니다.
 
-결과적으로 사용자는 로딩 화면 없이 바로 내용을 보고, 잠깐 뒤에 인터랙션이 가능해집니다.
-{% endhint %}
+#### Q. 개발자가 직접 Hydration 코드를 작성해야 하나요?
+
+**전혀 아닙니다!** `main.ts`에 작성한 `export const createApp = ViteSSG(App, { routes })` 한 줄 덕분에 브라우저에서 자동으로 일어납니다.
+
+일반 SPA와 SSG의 마운트 방식을 비교해 보면 원리가 한눈에 보입니다:
+
+- **일반 SPA (`createApp`)**:
+
+  ```typescript
+  createApp(App).mount("#app");
+  ```
+
+  브라우저의 `<div id="app">` 내부가 완전히 비어 있다고 가정하고, 자바스크립트로 처음부터 모든 HTML 태그를 백지 상태에서 새로 만듭니다.
+
+- **SSG 방식 (`createSSRApp`)**:
+
+  ```typescript
+  // ViteSSG가 브라우저에서 자동으로 실행해 주는 내부 코드
+  import { createSSRApp } from "vue";
+
+  const app = createSSRApp(App);
+  app.mount("#app"); // 👈 기존 HTML을 버리지 않고 'Hydration' 모드로 마운트!
+  ```
+
+  ViteSSG는 브라우저에서 일반 `createApp` 대신 Vue의 내장 함수인 **`createSSRApp`**을 호출합니다. 화면에 이미 렌더링된 HTML을 절대 지우지 않고 그대로 둔 채, `@click`이나 `v-model` 같은 **이벤트 전선만 쏙쏙 연결**합니다.
+
+#### `samarkand-local-mate` 실제 코드로 보는 Hydration 전과 후
+
+`src/components/HeroSection.vue`에 있는 **"Find My Guide"** 버튼을 예로 들어봅시다:
+
+```html
+<!-- src/components/HeroSection.vue -->
+<button
+  @click="emit('open-modal')"
+  class="bg-[#C8953C] text-white px-8 py-4 rounded-DEFAULT ..."
+>
+  Find My Guide
+</button>
+```
+
+1. **Hydration 전 (0ms ~ 300ms: HTML만 도착한 상태)**
+   - 사용자의 화면에는 이미 "사마르칸트에서 나만의 로컬 가이드를 만나보세요"라는 멋진 타이틀과 노란색 **"Find My Guide"** 버튼이 완벽하게 보입니다.
+   - 하지만 이 0.3초 동안 버튼을 광클해도 **모달창이 열리지 않습니다.** 아직 JavaScript(`main.js`)가 다운로드·실행되지 않아 HTML만 화면에 박제된 상태이기 때문입니다.
+
+2. **Hydration 순간 (300ms ~ 800ms: `main.js` 실행)**
+   - 브라우저가 `main.js` 실행을 완료하면서 `createSSRApp(App).mount('#app')`이 동작합니다.
+   - Vue가 화면에 이미 있는 `<button>` 요소를 찾아서, 우리가 작성해 둔 `@click="emit('open-modal')"` 이벤트 리스너를 **버튼에 부착(전선 연결)**합니다.
+   - 동시에 `App.vue`의 반응형 상태 변수(`isModalOpen`, `isLoading` 등)를 화면과 연결합니다.
+
+3. **Hydration 완료 후 (800ms 이후)**
+   - 이제 "Find My Guide" 버튼을 클릭하면 즉시 `openModal()` 함수가 실행되며 여행자 취향 입력 모달이 스르륵 열립니다!
+
+| 구분                            | 누가 / 어디서 수행하나?                        | 하는 일                                                                                            |
+| :------------------------------ | :--------------------------------------------- | :------------------------------------------------------------------------------------------------- |
+| **빌드 시점** (`npm run build`) | ViteSSG (Node.js 빌드 환경)                    | Vue 컴포넌트들을 미리 실행해 글자와 버튼이 꽉 찬 `.html` 파일을 구워냄                             |
+| **첫 화면 로딩** (0~300ms)      | 브라우저 렌더 엔진                             | 완성된 `.html`을 받아 즉시 화면에 그림 (초고속 첫 화면 👀)                                         |
+| **Hydration** (300~800ms)       | **Vue의 `createSSRApp` (ViteSSG가 자동 실행)** | 화면의 정적 HTML 태그들에 `@click`, `v-model` 등의 **이벤트 리스너를 부착**하여 인터랙션 활성화 🖱️ |
 
 ## 5. 귀납적 이해: 라우터 설정 살펴보기
 
@@ -417,7 +504,7 @@ export const createApp = ViteSSG(
             "/guides/alisher",
             "/guides/dilshod",
             "/guides/nigora",
-            "/guides/jamshid"
+            "/guides/jamshid",
           ];
         }
         return [path]; // 다른 라우트('/', '/guides')는 그대로 유지
@@ -526,15 +613,15 @@ Chrome 브라우저에서 F12 → Lighthouse 탭 → "Analyze page load" 버튼�
 
 **Performance 점수가 65 → 94로 오른 이유:**
 
-* First Contentful Paint(FCP): 첫 콘텐츠가 화면에 나타나는 시간이 대폭 단축됨
-* Time to Interactive(TTI): 사용자가 인터랙션할 수 있게 되는 시간 단축
-* Cumulative Layout Shift(CLS): SSG HTML이 미리 레이아웃을 잡아줘서 화면 흔들림 최소화
+- First Contentful Paint(FCP): 첫 콘텐츠가 화면에 나타나는 시간이 대폭 단축됨
+- Time to Interactive(TTI): 사용자가 인터랙션할 수 있게 되는 시간 단축
+- Cumulative Layout Shift(CLS): SSG HTML이 미리 레이아웃을 잡아줘서 화면 흔들림 최소화
 
 **SEO 점수가 72 → 98로 오른 이유:**
 
-* 구글 봇이 실제 콘텐츠를 HTML에서 바로 읽을 수 있음
-* `<title>`, `<meta description>` 태그도 각 페이지별로 올바르게 설정 가능
-* 페이지 로딩 속도 자체가 SEO 점수에 영향을 줌
+- 구글 봇이 실제 콘텐츠를 HTML에서 바로 읽을 수 있음
+- `<title>`, `<meta description>` 태그도 각 페이지별로 올바르게 설정 가능
+- 페이지 로딩 속도 자체가 SEO 점수에 영향을 줌
 
 > 💬 "현재 앱을 Lighthouse로 측정했더니 Performance가 65점이야. SSG 적용 후 개선할 수 있는 추가 최적화 방법도 알려줘."
 
@@ -542,7 +629,7 @@ Chrome 브라우저에서 F12 → Lighthouse 탭 → "Analyze page load" 버튼�
 
 빌드 후 `npm run preview`를 실행하면 로컬에서 빌드 결과물을 미리볼 수 있습니다. Chrome 개발자 도구(F12)의 Network 탭에서 "Slow 3G"로 네트워크 속도를 낮춰보세요. SPA와 SSG의 첫 로딩 차이가 극명하게 느껴집니다.
 
-***
+---
 
 ## 마무리: 이 장에서 배운 것들
 
@@ -552,13 +639,13 @@ Chrome 브라우저에서 F12 → Lighthouse 탭 → "Analyze page load" 버튼�
   ↑ 서버 부담     ↑ 흰 화면/SEO 취약     ↑ 둘의 장점 결합
 ```
 
-* **전통 SSR**: PHP 시대처럼 서버가 매번 HTML을 만드는 방식 — 항상 실행 중인 서버가 필요
-* **CSR/SPA**: Vue/React로 브라우저가 HTML을 만드는 방식 — 편리하지만 흰 화면과 SEO 문제
-* **SSG의 원리**: 빌드 시점에 HTML을 미리 생성해두는 방식 — 두 방식의 장점만 결합
-* **Vite-SSG 설정**: `main.ts` 수정, `vite-ssg build` 스크립트로 단 두 가지 변경으로 적용
-* **빌드 결과물**: `dist/` 폴더에 각 라우트별 완성된 HTML 파일이 생성됨
-* **Hydration**: SSG HTML + Vue 인터랙션의 결합 — 보여주고 나서 살아있게 만들기
-* **동적 라우트**: `includedRoutes`로 생성할 페이지 목록 지정
-* **Cloudflare Pages 배포**: 기존 1권 배포와 동일한 흐름 + `_redirects` 파일 추가
+- **전통 SSR**: PHP 시대처럼 서버가 매번 HTML을 만드는 방식 — 항상 실행 중인 서버가 필요
+- **CSR/SPA**: Vue/React로 브라우저가 HTML을 만드는 방식 — 편리하지만 흰 화면과 SEO 문제
+- **SSG의 원리**: 빌드 시점에 HTML을 미리 생성해두는 방식 — 두 방식의 장점만 결합
+- **Vite-SSG 설정**: `main.ts` 수정, `vite-ssg build` 스크립트로 단 두 가지 변경으로 적용
+- **빌드 결과물**: `dist/` 폴더에 각 라우트별 완성된 HTML 파일이 생성됨
+- **Hydration**: SSG HTML + Vue 인터랙션의 결합 — 보여주고 나서 살아있게 만들기
+- **동적 라우트**: `includedRoutes`로 생성할 페이지 목록 지정
+- **Cloudflare Pages 배포**: 기존 1권 배포와 동일한 흐름 + `_redirects` 파일 추가
 
 다음 장에서는 완성된 앱에 회원 가입, 로그인, 로그아웃을 구현하는 **인증 시스템**을 추가합니다.
