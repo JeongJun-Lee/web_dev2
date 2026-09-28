@@ -28,6 +28,6 @@
 
 - [부록 A: E2E 테스트 자동화 — 봇이 대신 앱을 눌러보게 하기](appendix/1_e2e_testing.md)
 - [부록 B: GitHub Actions CI/CD — 검증된 코드만 배포되는 파이프라인](appendix/2_github_actions.md)
-- [부록 C: AI 주도 SEO 최적화 — 구글 검색에 잘 걸리는 앱 만들기](appendix/3_seo_analytics.md)
-- [부록 D: 한계 돌파 챌린지 1 — 에이전틱 AI 워크플로우](appendix/4_agentic_dev.md)
-- [부록 E: 한계 돌파 챌린지 2 — 디자인 싱킹으로 나만의 포트폴리오 기획하기](appendix/5_design_thinking_portfolio.md)
+- [부록 C: 한계 돌파 챌린지 1 — 에이전틱 AI 워크플로우](appendix/4_agentic_dev.md)
+- [부록 D: 한계 돌파 챌린지 2 — 디자인 싱킹으로 나만의 포트폴리오 기획하기](appendix/5_design_thinking_portfolio.md)
+

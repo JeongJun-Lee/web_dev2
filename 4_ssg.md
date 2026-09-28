@@ -631,6 +631,370 @@ Chrome 브라우저에서 F12 → Lighthouse 탭 → "Analyze page load" 버튼�
 
 ---
 
+## 9. SEO 최적화 — 구글 검색에 잘 걸리는 앱 만들기
+
+> 🎯 **이 섹션의 목표**: 아무리 잘 만든 앱이라도 구글 검색 결과 3페이지에 묻혀 있으면 존재하지 않는 것과 같습니다. "사마르칸트 여행 가이드"로 검색했을 때 우리 앱이 1페이지에 나와야 비용 없이 사용자를 유입시킬 수 있습니다.
+
+4장에서 도입한 Vite-SSG가 SEO와 강력하게 연결됩니다. SPA는 초기 HTML이 비어 있어 구글 봇이 내용을 읽지 못하지만, **SSG는 미리 만들어진 HTML에 내용이 가득 차 있어 구글 봇이 바로 인덱싱**할 수 있습니다. 이제 `samarkand-local-mate`에 실제 구현된 SEO 아키텍처를 확인해봅니다.
+
+### 9-1. 패키지 설치 및 main.ts 등록: `@unhead/vue`
+
+Vue 3 생태계에서 메타 태그와 `<head>` 관리를 담당하는 공식 표준 라이브러리는 **`@unhead/vue`**입니다(기존 `@vueuse/head`의 공식 후속작).
+
+```bash
+npm install @unhead/vue
+```
+
+`main.ts`에서 Unhead 인스턴스를 생성해 앱에 플러그인으로 등록합니다:
+
+```typescript
+// src/main.ts
+import { createApp } from 'vue';
+import { createUnhead } from '@unhead/vue';
+import App from './App.vue';
+import './assets/main.css';
+
+const app = createApp(App);
+const head = createUnhead();
+app.use(head); // 👈 Unhead 플러그인 등록
+
+app.mount('#app');
+```
+
+> 💡 **Vite-SSG와 함께 쓸 때**: `ViteSSG` 세 번째 인자인 초기화 콜백에서 `({ app }) => { app.use(createUnhead()) }`로 등록하면 빌드 타임의 HTML 스냅샷과 브라우저 클라이언트 양쪽 모두에서 `<head>`가 완벽하게 동기화됩니다.
+
+---
+
+### 9-2. 프롬프팅: 메타 태그와 구조화 데이터를 한 번에
+
+> 💬 "samarkand-local-mate에 구글 검색 최적화(SEO)를 적용해줘. `@unhead/vue`를 활용해서 Open Graph, Twitter 카드, Canonical URL, 그리고 schema.org의 `TouristGuide` JSON-LD 구조화 데이터를 동적으로 제어할 수 있는 `useSeo.ts` 컴포저블과 `SeoMeta.vue` 컴포넌트를 만들어줘."
+
+AI가 프로젝트에 다음 두 핵심 파일을 생성합니다:
+
+1. `src/composables/useSeo.ts` — 메타 태그와 JSON-LD 스크립트 생성을 전담하는 재사용 컴포저블
+2. `src/components/SeoMeta.vue` — 템플릿 어디서나 선언적으로 태그를 주입할 수 있는 Renderless 컴포넌트
+
+{% hint style="info" %}
+**💡 개념 짚고 가기: '컴포저블(Composable)'이란 무엇인가요?**
+
+2장에서 우리는 Vue 3의 **Composition API**(`<script setup>`, `ref`, `computed` 등)를 배웠습니다. 이 기능들을 활용해 **"상태(state)와 로직(logic)을 깔끔하게 묶어 어디서나 재사용할 수 있게 만든 순수 함수"**를 바로 **컴포저블(Composable)**이라고 부릅니다. (React를 경험해 본 독자라면 '커스텀 훅(Custom Hook)'과 완전히 같은 개념이라고 생각하면 쉽습니다.)
+
+**컴포넌트 vs 컴포저블, 무엇이 다른가요?**
+
+| 구분 | 컴포넌트 (`.vue`) | 컴포저블 (`.ts`) |
+| :--- | :--- | :--- |
+| **주요 역할** | **화면(UI)** + 동작 결합 | **화면 없는 순수한 로직과 상태 관리** |
+| **구성 요소** | `<template>` + `<script>` + `<style>` | 순수 TypeScript 함수 (`ref`, `computed` 포함 가능) |
+| **이름 규칙** | `HeroSection.vue`, `SeoMeta.vue` (명사/대문자) | `useSeo.ts`, `useHead.ts` (**`use...` 접두사 소문자**) |
+| **비유** | **모니터 달린 커피 머신 본체** | **어디든 장착 가능한 고성능 에스프레소 추출 엔진** |
+
+**왜 컴포넌트와 분리해서 컴포저블을 만들까요?**
+메타 태그를 조합하고, JSON-LD 규격에 맞춰 사마르칸트 좌표와 평점을 조립하는 일은 **"화면을 그리는 일(HTML)"**이 아니라 **"순수한 데이터 가공 로직(TypeScript)"**입니다.
+
+이 로직을 `src/composables/useSeo.ts`라는 독립된 부품으로 만들어 두면, 나중에 가이드 상세 페이지든, 투어 예약 완료 페이지든 화면 종류에 상관없이 `useSeo(...)` 한 줄만 불러서 언제 어디서나 SEO 기능을 장착할 수 있습니다.
+{% endhint %}
+
+---
+
+### 9-3. 귀납적 코드 이해: `src/composables/useSeo.ts` — 검색엔진의 언어로 변환기
+
+실제 `samarkand-local-mate`의 `src/composables/useSeo.ts`를 열어봅니다:
+
+```typescript
+// src/composables/useSeo.ts
+import { useHead } from '@unhead/vue'
+
+export interface SeoOptions {
+  title: string
+  description: string
+  imageUrl?: string
+  path?: string
+  jsonLd?: Record<string, any>
+}
+
+export interface TouristGuideSchemaOptions {
+  name: string
+  description: string
+  languages?: string[] | string
+  ratingValue?: string | number
+  reviewCount?: string | number
+  imageUrl?: string
+  addressLocality?: string
+}
+
+export function useSeo(options: SeoOptions) {
+  const siteUrl = 'https://samarkand-local-mate.pages.dev'
+  const fullUrl = options.path ? `${siteUrl}${options.path}` : siteUrl
+  const image = options.imageUrl || `${siteUrl}/og-image.jpg`
+
+  const headObject: any = {
+    title: `${options.title} | Samarkand Local Mate`,
+    meta: [
+      { name: 'description', content: options.description },
+      // Open Graph (SNS 카카오톡/페이스북 공유 카드)
+      { property: 'og:title', content: options.title },
+      { property: 'og:description', content: options.description },
+      { property: 'og:image', content: image },
+      { property: 'og:url', content: fullUrl },
+      { property: 'og:type', content: 'website' },
+      { property: 'og:site_name', content: 'Samarkand Local Mate' },
+      // Twitter Card
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'twitter:title', content: options.title },
+      { name: 'twitter:description', content: options.description },
+      { name: 'twitter:image', content: image },
+    ],
+    link: [
+      { rel: 'canonical', href: fullUrl } // 👈 구글이 중복 URL을 방지하는 표준 링크
+    ]
+  }
+
+  // JSON-LD 구조화 데이터가 있으면 <script type="application/ld+json"> 태그로 주입
+  if (options.jsonLd) {
+    headObject.script = [
+      {
+        type: 'application/ld+json',
+        children: JSON.stringify(options.jsonLd)
+      }
+    ]
+  }
+
+  return useHead(headObject)
+}
+
+// schema.org의 TouristGuide 스키마를 생성하는 헬퍼 함수
+export function createTouristGuideSchema(guide: TouristGuideSchemaOptions) {
+  const languages = Array.isArray(guide.languages)
+    ? guide.languages
+    : (guide.languages ? guide.languages.split(',').map(s => s.trim()) : ['Korean', 'Uzbek', 'Russian'])
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'TouristGuide',
+    'name': guide.name,
+    'description': guide.description,
+    'knowsLanguage': languages,
+    'image': guide.imageUrl,
+    'address': {
+      '@type': 'PostalAddress',
+      'addressLocality': guide.addressLocality || 'Samarkand',
+      'addressCountry': 'UZ'
+    },
+    'geo': {
+      '@type': 'GeoCoordinates',
+      'latitude': 39.6547,
+      'longitude': 66.9597
+    },
+    ...(guide.ratingValue ? {
+      'aggregateRating': {
+        '@type': 'AggregateRating',
+        'ratingValue': String(guide.ratingValue),
+        'reviewCount': String(guide.reviewCount || '10')
+      }
+    } : {})
+  }
+}
+```
+
+**코드에서 눈여겨볼 핵심 포인트:**
+
+1. **`<link rel="canonical">`**: 같은 사이트가 도메인 주소나 쿼리 파라미터로 여러 개 잡혀 구글 검색 페널티를 받지 않도록 대표 공식 URL을 명시합니다.
+2. **`headObject.script`와 JSON-LD**: 구글 봇이 가장 좋아하는 `schema.org` 표준 객체를 `application/ld+json` 스크립트로 `<head>`에 주입합니다.
+3. **`TouristGuide` 스키마**: 사마르칸트의 실제 위도/경도(`39.6547, 66.9597`), 구사 언어, 평점(`aggregateRating`)을 담아 구글 검색 결과에 별점(⭐⭐⭐⭐⭐)이 표시되는 **리치 스니펫(Rich Snippet)**을 만들어냅니다.
+
+---
+
+### 9-4. 귀납적 코드 이해: `src/components/SeoMeta.vue` — 무렌더링(Renderless) 컴포넌트
+
+위 컴포저블을 감싸서 템플릿에서 편리하게 태그 형태로 쓸 수 있도록 만든 실제 `SeoMeta.vue`입니다:
+
+```vue
+<!-- src/components/SeoMeta.vue -->
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useSeo, createTouristGuideSchema, type TouristGuideSchemaOptions } from '@/composables/useSeo'
+
+const props = withDefaults(
+  defineProps<{
+    title: string
+    description: string
+    imageUrl?: string
+    path?: string
+    isGuideDetail?: boolean
+    guideInfo?: TouristGuideSchemaOptions
+  }>(),
+  {
+    path: '/',
+    isGuideDetail: false
+  }
+)
+
+const jsonLdData = computed(() => {
+  // 가이드 상세 정보가 들어온 경우: TouristGuide 스키마 생성
+  if (props.isGuideDetail && props.guideInfo) {
+    return createTouristGuideSchema(props.guideInfo)
+  }
+  // 일반 페이지인 경우: 서비스 대표 TravelAgency 스키마 생성
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'TravelAgency',
+    'name': 'Samarkand Local Mate',
+    'description': props.description,
+    'url': 'https://samarkand-local-mate.pages.dev'
+  }
+})
+
+useSeo({
+  title: props.title,
+  description: props.description,
+  imageUrl: props.imageUrl,
+  path: props.path,
+  jsonLd: jsonLdData.value
+})
+</script>
+
+<template>
+  <!-- Renderless SEO component: 화면에는 아무 DOM 요소도 그리지 않고 오직 <head>만 제어 -->
+</template>
+```
+
+---
+
+### 9-5. 실제 앱(`App.vue`)에서의 실전 활용
+
+실제 `samarkand-local-mate/src/App.vue`에서는 이 `<SeoMeta>`를 어떻게 사용할까요?
+
+사용자가 처음 방문했을 때와, 가이드 매칭 결과가 나왔을 때 **페이지의 메타 정보가 상황에 맞게 동적으로 전환**되도록 구현되어 있습니다:
+
+```vue
+<!-- src/App.vue (실제 프로젝트 코드 발췌) -->
+<template>
+  <div class="bg-background text-on-background min-h-screen">
+    <!-- 1. 기본 첫 화면: 서비스 대표 SEO 메타데이터 -->
+    <SeoMeta
+      v-if="!showResult || guides.length === 0"
+      title="사마르칸트 로컬 가이드 매칭 서비스"
+      description="역사 · 미식 · 사진 — 당신의 취향에 딱 맞는 사마르칸트 현지 로컬 가이드를 AI가 30초 만에 추천합니다."
+      path="/"
+    />
+
+    <!-- 2. 가이드 매칭 결과 화면: 맞춤 가이드 정보로 TouristGuide 스키마 즉시 반영! -->
+    <SeoMeta
+      v-else
+      :title="`${resUserName}님의 맞춤 사마르칸트 가이드 추천`"
+      :description="aiRecommendation || `${guides[0]?.name || '알리셰르'} 가이드의 사마르칸트 맞춤 투어 안내`"
+      :path="`/guides/${guides[0]?.id || 1}`"
+      :is-guide-detail="true"
+      :guide-info="{
+        name: guides[0]?.name || '알리셰르 (Alisher)',
+        description: guides[0]?.description || '사마르칸트 국립대 역사학과 출신 역사 및 고건축 전문 가이드',
+        languages: guides[0]?.languages || ['한국어', '우즈베크어', '러시아어'],
+        ratingValue: guides[0]?.rating || '4.9',
+        imageUrl: 'https://samarkand-local-mate.pages.dev/images/alisher.jpg'
+      }"
+    />
+
+    <TopNavbar @open-modal="openModal" />
+    <HeroSection @open-modal="openModal" />
+    <!-- ... 나머지 UI 섹션들 -->
+  </div>
+</template>
+```
+
+향후 라우터 기반의 가이드 개별 상세 페이지(`/guides/:id`)를 분리하더라도, 이 `<SeoMeta>` 컴포넌트에 해당 가이드 데이터만 넘겨주면 동일하게 동작합니다.
+
+---
+
+### 9-6. 프롬프팅: 사이트맵(sitemap.xml)과 robots.txt
+
+> 💬 "Cloudflare Pages에 배포할 때 구글 검색 봇이 사이트 구조를 쉽게 긁어갈 수 있도록 sitemap.xml과 robots.txt 생성 규칙을 만들어줘."
+
+```xml
+<!-- public/sitemap.xml -->
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://samarkand-local-mate.pages.dev/</loc>
+    <priority>1.0</priority>
+    <changefreq>weekly</changefreq>
+  </url>
+  <url>
+    <loc>https://samarkand-local-mate.pages.dev/guides/alisher</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://samarkand-local-mate.pages.dev/guides/dilshod</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://samarkand-local-mate.pages.dev/guides/nigora</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+  <url>
+    <loc>https://samarkand-local-mate.pages.dev/guides/jamshid</loc>
+    <priority>0.8</priority>
+    <changefreq>monthly</changefreq>
+  </url>
+</urlset>
+```
+
+```text
+# public/robots.txt
+User-agent: *
+Allow: /
+
+Sitemap: https://samarkand-local-mate.pages.dev/sitemap.xml
+```
+
+사이트맵은 구글 봇에게 "우리 사이트의 지도"를 제공합니다. 이 파일을 **Google Search Console**에 등록하면, 구글이 우리 가이드 페이지들을 누락 없이 빠르게 인덱싱합니다.
+
+{% hint style="warning" %}
+**⚠️ 실무 팁: 연습용/학습용 사이트의 구글 검색 노출 방지하기**
+
+- **도메인 변경 필수**: `useSeo.ts`, `sitemap.xml`, `robots.txt`에 적힌 `samarkand-local-mate.pages.dev`는 책의 예시 도메인입니다. 실습할 때는 반드시 **독자 본인의 Cloudflare Pages 주소**(예: `https://my-tour-project.pages.dev`)로 변경해야 합니다.
+- **연습 단계에서 구글 노출을 막고 싶다면?**: 아직 테스트용 데이터(가짜 가이드 정보)만 들어있고 실제 여행자를 받을 준비가 되지 않았다면, 구글 봇이 사이트를 긁어가지 못하게 `robots.txt`를 차단 모드로 설정해두는 것이 실무 표준입니다:
+  ```text
+  # public/robots.txt (개발 및 연습 단계 — 검색 노출 차단)
+  User-agent: *
+  Disallow: /
+  ```
+  *(또는 HTML `<head>`에 `<meta name="robots" content="noindex, nofollow" />` 메타 태그를 추가해도 됩니다.)*
+- **정식 오픈 시점 체크리스트**: 나만의 진짜 도메인을 연결하고 실제 고객을 맞이할 준비가 끝났을 때, 비로소 `Allow: /`로 변경하여 배포하고 Google Search Console에 사이트맵을 제출하세요!
+{% endhint %}
+
+---
+
+### 9-7. 크롤러 검증과 핵심 웹 지표(Core Web Vitals)
+
+Chrome 개발자 도구(F12)의 Lighthouse를 실행해 봅니다:
+
+```
+개발자 도구 → Lighthouse → [SEO] & [Performance] 탭 체크 → "Analyze page load" 실행
+```
+
+| 핵심 지표 | 의미 | 목표 | Vite-SSG + Cloudflare 효과 |
+| :--- | :--- | :--- | :--- |
+| **LCP** (Largest Contentful Paint) | 대표 이미지나 메인 텍스트가 뜨는 시간 | 2.5초 이내 | **0.8초 달성** (미리 구워둔 정적 HTML을 글로벌 CDN에서 즉시 반환) |
+| **FID / INP** (First Input Delay) | 사용자가 클릭했을 때 반응 속도 | 100ms 이내 | **초고속 반응** (가벼운 번들과 빠른 Hydration 완료) |
+| **CLS** (Cumulative Layout Shift) | 로딩 중 화면이 덜컹거리며 밀리는 현상 | 0.1 이내 | **0에 수렴** (정적 뼈대와 고정 이미지 영역 유지) |
+
+Vite-SSG와 `@unhead/vue`의 조합은 단순한 "기술적 만족"이 아니라, 구글 검색 결과 1페이지 노출과 사용자 이탈률 방지라는 **실제 비즈니스 성공 지표**로 이어집니다.
+
+{% hint style="info" %}
+**💡 SEO 점수 변화 전/후 정리**
+
+8절에서 확인한 Lighthouse 점수를 다시 보면:
+
+- **SEO 72 → 98**: SSG로 구글 봇이 실제 콘텐츠를 읽을 수 있게 됨
+- **+ 메타 태그 추가**: 각 가이드 페이지별 `<title>`, `description`, JSON-LD 삽입으로 리치 스니펫 활성화
+- **+ 사이트맵 제출**: Google Search Console에 sitemap.xml을 제출하면 새 가이드 페이지도 빠르게 인덱싱됨
+{% endhint %}
+
+---
+
 ## 마무리: 이 장에서 배운 것들
 
 ```
@@ -647,5 +1011,8 @@ Chrome 브라우저에서 F12 → Lighthouse 탭 → "Analyze page load" 버튼�
 - **Hydration**: SSG HTML + Vue 인터랙션의 결합 — 보여주고 나서 살아있게 만들기
 - **동적 라우트**: `includedRoutes`로 생성할 페이지 목록 지정
 - **Cloudflare Pages 배포**: 기존 1권 배포와 동일한 흐름 + `_redirects` 파일 추가
+- **SEO 최적화**: `SeoMeta.vue`로 각 가이드 페이지별 메타 태그 + JSON-LD 구조화 데이터 삽입
+- **컴포저블(Composable)**: 화면(UI) 없는 순수 로직과 상태를 `use...` 함수로 캡슐화하여 재사용하는 Vue 3 기법
+- **핵심 웹 지표**: LCP · FID · CLS — Vite-SSG + Cloudflare CDN이 자동으로 개선
 
 다음 장에서는 완성된 앱에 회원 가입, 로그인, 로그아웃을 구현하는 **인증 시스템**을 추가합니다.
